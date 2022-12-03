@@ -11,7 +11,7 @@ export const GameItem = ({ game }) => {
                 <span className='game-item__title'>{game.title}</span>
                 <div className='game-item__genre'>
                     {game.genres.map(genre =>
-                        genre
+                        <div key={genre} className='game-item__genre-box'>{genre}</div>
                     )}
                 </div>
                 <div className='game-item__btn'> <GameBtn game={game} /></div>

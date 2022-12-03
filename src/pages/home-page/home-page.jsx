@@ -41,7 +41,7 @@ const GAMES = [
   },
   {
     image: '/game-covers/rainbow_siege.jpeg',
-    title: 'Tom Clancy\'s Rainbow Six® Siege',
+    title: 'TC Rainbow Six® Siege',
     video: 'https://www.youtube.com/embed/6wlvYh0h63k',
     genres: ['Тактика', 'Шутер'],
     price: 982,

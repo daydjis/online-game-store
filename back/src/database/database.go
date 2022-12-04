@@ -46,26 +46,26 @@ func HealthCheck() *mongo.Client {
 	return client
 }
 
-func GetGames() ([]Game){
+func GetGames() []Game {
 	var result []Game
 	findOptions := options.Find()
-	
+
 	client, _ := mongo.Connect(ctx, opts)
 	col := client.Database("games").Collection("games_collection")
 	cur, err := col.Find(ctx, bson.D{{}}, findOptions)
-    if err !=nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 	for cur.Next(ctx) {
-        var elem Game
-        err := cur.Decode(&elem)
-        if err != nil {
-            log.Fatal(err)
-        }
+		var elem Game
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-        result = append(result, elem)
+		result = append(result, elem)
 
-    }
+	}
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)

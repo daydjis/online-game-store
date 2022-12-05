@@ -11,7 +11,10 @@ func gamesHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == http.MethodGet {
 		result := database.GetGames()
 		writer.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(writer).Encode(result)
+		err := json.NewEncoder(writer).Encode(result)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

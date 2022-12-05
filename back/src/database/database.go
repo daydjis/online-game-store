@@ -15,14 +15,14 @@ import (
 const uri = "mongodb+srv://geniy_folomeev:26051978aA%21@gamestore.dsm2ow5.mongodb.net/?retryWrites=true&w=majority"
 
 type Game struct {
-	ID               primitive.ObjectID `bson:"_id"`
-	Title            string
-	Description      string
-	Price            int64
-	Genres           []string
-	Image            string
-	Video            string
-	ImageDescription string
+	ID               primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Title            string             `json:"title"`
+	Description      string             `json:"description"`
+	Price            int64              `json:"price"`
+	Genres           []string           `json:"genres"`
+	Image            string             `json:"image"`
+	Video            string             `json:"video"`
+	ImageDescription string             `json:"imageDescription"`
 }
 
 var ctx = context.TODO()

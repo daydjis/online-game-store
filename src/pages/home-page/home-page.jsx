@@ -65,12 +65,12 @@ const GAMES = [
 
 const HomePage = () => {
   const history = useHistory()
-  const [newGames, setGames] = useState(null)
+  const [newGames, setGames] = useState([])
   useEffect(() => {
-    const games = axios.get("http://localhost:5000/api/games")
-      .catch((e) => console.log(e))
-    setGames(games)
-    console.log(games);
+    const promise = axios.get("http://localhost:5000/api/games")
+        .then((res)=>setGames(res.data.content))
+        .catch((e) => console.log(e))
+    console.log(promise);
   }, [])
   return <div className="home-page">{newGames.map(game => <GameItem game={game} key={game.id} />)}
   </div>

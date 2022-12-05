@@ -1,0 +1,10 @@
+FROM golang:latest
+WORKDIR /app
+COPY . .
+WORKDIR /app/src
+RUN go mod download
+WORKDIR /app
+RUN go build -o back
+EXPOSE 5000
+
+ENTRYPOINT ["./back"]

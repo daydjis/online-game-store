@@ -4,6 +4,8 @@ import { GameItem } from '../../components/game-item/game-item'
 import axios from 'axios'
 import { useHistory } from 'react-router-dom'
 
+
+
 const GAMES = [
   {
     image: '/game-covers/forza_5.jpeg',
@@ -65,21 +67,7 @@ const HomePage = () => {
   const history = useHistory()
   const [newGames, setGames] = useState(null)
   useEffect(() => {
-    const games = axios.get("http://localhost:5000/api/games").catch(function (error) {
-      if (error.response) {
-        // Request made and server responded
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
-      }
-
-    });
+    const { games } = axios.get("http://localhost:5000/api/games")
     console.log(games);
   }, [])
   return <div className="home-page">{GAMES.map(game => <GameItem game={game} key={game.id} />)}

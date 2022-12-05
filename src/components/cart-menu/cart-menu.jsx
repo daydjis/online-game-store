@@ -6,9 +6,7 @@ import { RiDeleteBin7Fill } from "react-icons/ri"
 
 
 export const CartMenu = ({ items, onClick }) => {
-    const handleDelete = (e) => {
-        console.log(e);
-    }
+
     return (items.length > 0 ?
         (<div className='cart-menu'>
             <div className='cart-menu__games-list'>

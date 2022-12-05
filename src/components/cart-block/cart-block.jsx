@@ -4,6 +4,7 @@ import "./cart-block.css"
 import { AiOutlineShoppingCart } from "react-icons/ai"
 import CartMenu from '../cart-menu'
 import { calcTotalPrice } from '../utils'
+import ItemsInCart from '../items-in-Cart'
 
 export const CartBlock = () => {
     const [isCartMenuVisible, setCartMenuVisible] = useState(false)
@@ -11,6 +12,7 @@ export const CartBlock = () => {
     const totalPrice = calcTotalPrice(items)
     return (
         <div>
+            <ItemsInCart quantity={items.length} />
             <AiOutlineShoppingCart size={30} className="cart-block__icon" onClick={() => setCartMenuVisible(!isCartMenuVisible)} />
             {totalPrice > 0 ? <span className='cart-block__total-price'>{totalPrice}</span> : null}
             {isCartMenuVisible && <CartMenu items={items} onClick={e => null} />}

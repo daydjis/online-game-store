@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './home-page.css'
 import { GameItem } from '../../components/game-item/game-item'
+import axios from 'axios'
+import { useHistory } from 'react-router-dom'
+
+
 
 const GAMES = [
   {
@@ -60,7 +64,14 @@ const GAMES = [
 ]
 
 const HomePage = () => {
-  return <div className="home-page">{GAMES.map(game => <GameItem game={game} key={game.id} />)}</div>
+  const history = useHistory()
+  const [newGames, setGames] = useState(null)
+  useEffect(() => {
+    const { games } = axios.get("http://localhost:5000/api/games")
+    console.log(games);
+  }, [])
+  return <div className="home-page">{GAMES.map(game => <GameItem game={game} key={game.id} />)}
+  </div>
 }
 
 export default HomePage

@@ -8,8 +8,6 @@ import axios from 'axios'
 const HomePage = () => {
   const [newGames, setGames] = useState([])
   useEffect(() => {
-    // const promise = axios.get("http://localhost:5000/api/games")
-    //   .then((res) => setGames(res.data))
     const getGames = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/games');

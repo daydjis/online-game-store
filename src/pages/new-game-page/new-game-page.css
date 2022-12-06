@@ -1,0 +1,20 @@
+.new-game-page__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    margin-top: 20px;
+    width: 200px;
+    background-color: rgb(60, 90, 50);
+}
+
+.new-game-page__form {
+    width: 400px;
+    max-width: auto;
+    height: 32px;
+    border-radius: 5px;
+    margin: 10;
+}

@@ -12,22 +12,15 @@
 
 .game-page__buy-game {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     margin-top: 20px;
 }
-.game-item__genre {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+
 .game-item__g {
-    background-color: rgb(143, 48, 80);
+    background-color: rgb(17, 14, 15);
     border-radius: 5px;
     padding: 5px;
-    max-width: 50px;
-    height: 20px;
     margin: 2px;
-    display: flex;
     justify-content: center;
-    align-items: center;
+    display: flex;
 }

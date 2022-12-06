@@ -6,9 +6,9 @@ import "./game-page.css"
 
 const GamePage = () => {
 
-    const game = useSelector((state) => state.game.currentGame)
+    const game = useSelector((state) => state.games.currentGame)
 
-    console.log("qwe", game);
+    console.log("init component", game);
 
 
     return (

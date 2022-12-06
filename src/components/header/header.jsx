@@ -11,7 +11,11 @@ export const Header = () => {
           Game Store
         </Link>
       </div>
-
+      <div className='wrapper'>
+        <Link to="/games/new" className='header__store-title'>
+          создать
+        </Link>
+      </div>
       <div className='wrapper header__cart-btn-wrapper'>
         <CartBlock />
       </div>

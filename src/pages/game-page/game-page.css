@@ -1,0 +1,33 @@
+.game-page__content {
+    display: flex;
+}
+
+.game-page__left {
+    width: 70%;
+}
+
+.game-page__right {
+    width: 30%;
+}
+
+.game-page__buy-game {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+.game-item__genre {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.game-item__g {
+    background-color: rgb(143, 48, 80);
+    border-radius: 5px;
+    padding: 5px;
+    max-width: 50px;
+    height: 20px;
+    margin: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

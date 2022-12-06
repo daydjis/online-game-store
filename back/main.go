@@ -10,11 +10,12 @@ import (
 
 func gamesHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == http.MethodGet {
-		log.Println("GET /api/games")
+		gameId := request.URL.Query().Get("id")
+		log.Println("GET ", request.URL)
 		writer.Header().Set("Access-Control-Allow-Origin", "*")
 		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		writer.Header().Set("Content-Type", "application/json")
-		result := database.GetGames()
+		result := database.GetGames(gameId)
 		err := json.NewEncoder(writer).Encode(result)
 		if err != nil {
 			log.Fatal(err)

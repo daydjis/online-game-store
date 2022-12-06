@@ -47,28 +47,40 @@ func HealthCheck() *mongo.Client {
 	return client
 }
 
-func GetGames() []Game {
+func GetGames(gameId string) []Game {
 	var result []Game
-	findOptions := options.Find()
 
 	client, _ := mongo.Connect(ctx, opts)
 	col := client.Database("games").Collection("games_collection")
-	cur, err := col.Find(ctx, bson.D{{}}, findOptions)
-	if err != nil {
-		log.Fatal(err)
-	}
-	for cur.Next(ctx) {
-		var elem Game
-		err := cur.Decode(&elem)
+	if gameId == "" {
+		cur, err := col.Find(ctx, bson.D{{}})
 		if err != nil {
 			log.Fatal(err)
 		}
+		for cur.Next(ctx) {
+			var elem Game
+			err := cur.Decode(&elem)
+			if err != nil {
+				log.Fatal(err)
+			}
 
+			result = append(result, elem)
+		}
+	} else {
+		var elem Game
+		objectId, err := primitive.ObjectIDFromHex(gameId)
+		if err != nil {
+			log.Println("Could not parse query param to ObjectID")
+		}
+		err = col.FindOne(ctx, bson.M{"_id": objectId}).Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
 		result = append(result, elem)
-
 	}
+
 	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
+		if err := client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()

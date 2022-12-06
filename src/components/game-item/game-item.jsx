@@ -4,7 +4,7 @@ import GameBtn from '../game-btn'
 import GameCover from '../game-cover'
 import "./game-item.css"
 import { setCurrentGame } from "../../redux/games/reducer"
-import { useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router'
 
 export const GameItem = ({ game }) => {
     const history = useHistory()

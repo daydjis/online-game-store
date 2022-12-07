@@ -11,26 +11,29 @@ export const NewGamePage = () => {
     const [genres, setGenres] = useState("")
     const [video, setVideo] = useState("")
     const [image, setImage] = useState("")
-    const headers = {
-        "Accept": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "X-Requested-With": "XMLHttpRequest",
-        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
-    }
 
 
-    const handleCreateGame = () => {
-        axios.get('http://localhost:5000/api/games/new', headers, {
-            title: title,
-            genres: [genres],
-            price: Number(price),
-            video: video,
-            image: image,
-            description: description
+
+
+
+
+
+    const handleCreateGame = async (data) => {
+        const responce = await fetch("http://localhost:5000/api/games/new", {
+            method: "POST",
+            body: JSON.stringify(data = {
+                title: title,
+                genres: [genres],
+                price: Number(price),
+                video: video,
+                image: image,
+                description: description
+            })
         })
-            .then((res) => console.log('Response', res))
-
+        if (!responce.ok) {
+            throw new Error(`Ошибка по адресу ${"http://localhost:5000/api/games/new"}, статус ошибки ${responce}`)
+        }
+        return await responce.json()
     }
 
 

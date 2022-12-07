@@ -3,6 +3,7 @@ import HomePage from './pages/home-page'
 import GamePage from './pages/game-page'
 import Header from './components/header'
 import NewGamePage from './pages/new-game-page'
+import OrderPage from './pages/order-page'
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
             <NewGamePage />
           </Route>
           <Route exact path="/order">
-            <GamePage />
+            <OrderPage />
           </Route>
           <Route exact path="/app/:title">
             <GamePage />

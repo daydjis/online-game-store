@@ -3,9 +3,18 @@ import Button from '../button'
 import { calcTotalPrice } from '../utils'
 import "./cart-menu.css"
 import { RiDeleteBin7Fill } from "react-icons/ri"
+import { useDispatch } from 'react-redux'
+import { deleteItemFromCart } from '../../redux/cart/reducer'
 
 
 export const CartMenu = ({ items, onClick }) => {
+
+    const dispatch = useDispatch()
+
+    const handleDelete = () => {
+        dispatch(deleteItemFromCart())
+        console.log("work");
+    }
 
     return (items.length > 0 ?
         (<div className='cart-menu'>
@@ -13,7 +22,7 @@ export const CartMenu = ({ items, onClick }) => {
                 {items.length > 0 ? items.map((game) => <div key={game.title} className="cart-menu__games-list-onCart">
                     <div>{game.title}</div>
                     <div className='cart-menu__games-list-onCart-price'>{game.price} руб </div>
-                    <RiDeleteBin7Fill size={20} cursor="pointer" />
+                    <RiDeleteBin7Fill size={20} cursor="pointer" onClick={handleDelete} />
                 </div>
                 ) : "Пусто"}
 

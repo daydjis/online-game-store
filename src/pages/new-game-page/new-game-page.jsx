@@ -11,19 +11,28 @@ export const NewGamePage = () => {
     const [genres, setGenres] = useState("")
     const [video, setVideo] = useState("")
     const [image, setImage] = useState("")
+    const headers = {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "X-Requested-With": "XMLHttpRequest",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
+    }
 
 
     const handleCreateGame = () => {
-        const formData = {
+        axios.get('http://localhost:5000/api/games/new', headers, {
             title: title,
             genres: [genres],
             price: Number(price),
             video: video,
             image: image,
             description: description
-        }
-        console.log(formData);
+        })
+            .then((res) => console.log('Response', res))
+
     }
+
 
     return (
         <div className='new-game-page__container'>

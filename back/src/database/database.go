@@ -86,17 +86,33 @@ func GetGames(gameId string) []Game {
 	return result
 }
 
-func AddNewGame(v Game) {
+func AddNewGame(reqBody Game) (string, error) {
 	client, _ := mongo.Connect(ctx, opts)
 	col := client.Database("games").Collection("games_collection")
-	_, err := col.InsertOne(ctx, v)
+	result, err := col.InsertOne(ctx, reqBody)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	gameId := result.InsertedID.(primitive.ObjectID).Hex()
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
+	return gameId, err
+}
+
+func DeleteGame(reqBody Game) (int64, error) {
+	client, _ := mongo.Connect(ctx, opts)
+	col := client.Database("games").Collection("games_collection")
+	result, err := col.DeleteOne(ctx, bson.M{"_id": reqBody.ID})
+	if err != nil {
+		log.Println(err)
+	}
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	return result.DeletedCount, err
 }

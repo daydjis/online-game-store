@@ -9,12 +9,12 @@ import (
 )
 
 func gamesHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	writer.Header().Set("Content-Type", "application/json")
 	if request.Method == http.MethodGet {
 		gameId := request.URL.Query().Get("id")
-		log.Println("GET ", request.URL)
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		writer.Header().Set("Content-Type", "application/json")
+		log.Println("GET", request.URL)
 		result := database.GetGames(gameId)
 		err := json.NewEncoder(writer).Encode(result)
 		if err != nil {
@@ -24,21 +24,45 @@ func gamesHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func newGamesHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	writer.Header().Set("Content-Type", "application/json")
 	if request.Method == http.MethodPost {
-		log.Println("POST /api/games/new")
-		var v database.Game
+		log.Println("POST", request.URL)
+		var reqBody database.Game
 		body, _ := io.ReadAll(request.Body)
-		if err := json.Unmarshal(body, &v); err != nil {
+		if err := json.Unmarshal(body, &reqBody); err != nil {
 			log.Fatal(err)
 		}
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		writer.Header().Set("Content-Type", "application/json")
-		database.AddNewGame(v)
-		err := json.NewEncoder(writer).Encode("{\"result\": \"success\"}")
+		result, err := database.AddNewGame(reqBody)
+		response, status := MakeResponseForPost(result, err)
+		writer.WriteHeader(status)
+		err = json.NewEncoder(writer).Encode(response)
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+}
+
+func deleteGameHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	writer.Header().Set("Content-Type", "application/json")
+	if request.Method == http.MethodDelete {
+		var reqBody database.Game
+		log.Println("DELETE", request.URL)
+		body, _ := io.ReadAll(request.Body)
+		if err := json.Unmarshal(body, &reqBody); err != nil {
+			log.Fatal(err)
+		}
+		deletedCount, err := database.DeleteGame(reqBody)
+		response, status := MakeResponseForDelete(deletedCount, err)
+		writer.WriteHeader(status)
+		err = json.NewEncoder(writer).Encode(response)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	}
 }
 
@@ -46,6 +70,7 @@ func main() {
 	database.HealthCheck()
 	http.HandleFunc("/api/games", gamesHandler)
 	http.HandleFunc("/api/games/new", newGamesHandler)
+	http.HandleFunc("/api/games/delete", deleteGameHandler)
 
 	err := http.ListenAndServe(":5000", nil)
 	if err != nil {

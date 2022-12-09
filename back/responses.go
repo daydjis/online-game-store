@@ -35,3 +35,17 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 	}
 	return response, status
 }
+
+func MakeResponseForRegister(userID string, err error) (string, int) {
+	var response string
+	var status int
+	if err != nil {
+		log.Println(err)
+		response = fmt.Sprintf("{\"Result\":\"User was not created,\"Error\": \"%s\"}", err)
+		status = 500
+	} else {
+		response = fmt.Sprintf("{\"Result\":\"User was created successfully\", \"id\": \"%s\"}", userID)
+		status = 200
+	}
+	return response, status
+}

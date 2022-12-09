@@ -1,10 +1,12 @@
 package database
 
 import (
+	"back/src/hashing"
 	"context"
 	"fmt"
 	"log"
 
+	_ "back/src/hashing"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,6 +25,12 @@ type Game struct {
 	Image            string             `json:"image"`
 	Video            string             `json:"video"`
 	ImageDescription string             `json:"imageDescription"`
+}
+
+type User struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Login    string             `json:"login"`
+	Password string             `json:"password"`
 }
 
 var ctx = context.TODO()
@@ -122,4 +130,26 @@ func DeleteGame(reqBody Game) (int64, error) {
 		}
 	}()
 	return result.DeletedCount, err
+}
+
+func RegisterNewUser(user User) (string, error) {
+	// Хэшируем пароль пользователя
+	user.Password = hashing.HashPassword(user.Password)
+	// Инициализируем клиент
+	client, _ := mongo.Connect(ctx, opts)
+	// Подключаемся к базе games с коллекцией users
+	col := client.Database("games").Collection("users")
+	// Создаем пользователя с указанными параметрами
+	result, err := col.InsertOne(ctx, user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Получаем ID созданного пользователя
+	userID := result.InsertedID.(primitive.ObjectID).Hex()
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	return userID, err
 }

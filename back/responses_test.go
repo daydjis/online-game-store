@@ -43,9 +43,34 @@ var MakeResponseForDeleteValues = []MakeResponseForDeleteParameters{
 	{1, nil, "{\"Result\":\"Game was deleted successfully\"}", 200},
 }
 
-func TestMakeResponseForDeleteErr(t *testing.T) {
+func TestMakeResponseForDelete(t *testing.T) {
 	for _, arg := range MakeResponseForDeleteValues {
 		response, status := MakeResponseForDelete(arg.deletedCount, arg.err)
+		if response != arg.expectedResponse {
+			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
+		}
+		if status != arg.expectedStatus {
+			t.Errorf("Expected status: %d, Got: %d", arg.expectedStatus, status)
+		}
+
+	}
+}
+
+type MakeResponseForRegisterParameters struct {
+	userID           string
+	err              interface{ Error() string }
+	expectedResponse string
+	expectedStatus   int
+}
+
+var MakeResponseForRegisterValues = []MakeResponseForRegisterParameters{
+	{"uniqID", errors.New("such a horrible error"), "{\"Result\":\"User was not created,\"Error\": \"such a horrible error\"}", 500},
+	{"uniqID", nil, "{\"Result\":\"User was created successfully\", \"id\": \"uniqID\"}", 200},
+}
+
+func TestMakeResponseForRegister(t *testing.T) {
+	for _, arg := range MakeResponseForRegisterValues {
+		response, status := MakeResponseForRegister(arg.userID, arg.err)
 		if response != arg.expectedResponse {
 			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
 		}

@@ -1,6 +1,10 @@
 package main
 
 import (
+	"back/src/database"
+	"back/src/hashing"
+	_ "back/src/hashing"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -40,13 +44,29 @@ func MakeResponseForRegister(userID string, err error) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "duplicated login" {
-			response := fmt.Sprint("{\"Result\":\"User was not created,\"Error\":\"User with this login already exists\"}")
+			response := fmt.Sprint("{\"Result\":\"User was not created\",\"Error\":\"User with this login already exists\"}")
 			return response, 409
 		}
 		response := fmt.Sprintf("{\"Result\":\"User was not created,\"Error\":\"%s\"}", err)
 		return response, 500
-	} else {
-		response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"id\": \"%s\"}", userID)
-		return response, 200
 	}
+	response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"id\": \"%s\"}", userID)
+	return response, 200
+}
+
+func MakeResponseForLogin(err error) (string, int) {
+	if err != nil {
+		log.Println(err)
+		if errors.Is(err, hashing.ErrWrongPassword) {
+			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+			return response, 404
+		} else if errors.Is(err, database.ErrWrongLogin) {
+			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+			return response, 404
+		}
+		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+		return response, 500
+	}
+	response := fmt.Sprint("{\"Result\":\"Success, welcome to the club, buddy!\"}")
+	return response, 200
 }

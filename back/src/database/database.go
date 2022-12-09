@@ -37,6 +37,9 @@ type User struct {
 var ctx = context.TODO()
 var opts = options.Client().ApplyURI(uri)
 
+var ErrDuplicatedLogin = errors.New("duplicated login")
+var ErrWrongLogin = errors.New("wrong login")
+
 func HealthCheck() {
 	// Инициализируем клиент для БД
 	client, err := mongo.Connect(ctx, opts)
@@ -146,11 +149,9 @@ func RegisterNewUser(user User) (string, error) {
 	result, err := col.InsertOne(ctx, user)
 	if err != nil {
 		if errors.As(mongo.WriteError{}, &err) {
-			handledError = errors.New("duplicated login")
-			return userID, handledError
-		} else {
-			log.Fatal(err)
+			return userID, ErrDuplicatedLogin
 		}
+		log.Fatal(err)
 	}
 	// Получаем ID созданного пользователя
 	userID = result.InsertedID.(primitive.ObjectID).Hex()
@@ -160,4 +161,23 @@ func RegisterNewUser(user User) (string, error) {
 		}
 	}()
 	return userID, handledError
+}
+
+func CheckLogin(user User) error {
+	var userDB User
+	// Инициализируем клиент
+	client, _ := mongo.Connect(ctx, opts)
+	// Подключаемся к базе games с коллекцией users
+	col := client.Database("games").Collection("users")
+	// Ищем пользователя с указанным логином
+	err := col.FindOne(ctx, bson.M{"login": user.Login}).Decode(&userDB)
+	if err != nil {
+		if errors.As(mongo.ErrNoDocuments, &err) {
+			return ErrWrongLogin
+		}
+		log.Fatal(err)
+	}
+	// Проверяем пароль пользователя
+	handledError := hashing.CheckPassword(userDB.Password, user.Password)
+	return handledError
 }

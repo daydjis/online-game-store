@@ -40,6 +40,7 @@ type MakeResponseForDeleteParameters struct {
 var MakeResponseForDeleteValues = []MakeResponseForDeleteParameters{
 	{0, errors.New("such a horrible error"), "{\"Result\":\"Game was not deleted,\"Error\": \"such a horrible error\"}", 500},
 	{0, nil, "{\"Result\":\"Game was not deleted,\"Error\": \"Wrong game id\"}", 404},
+	{1, nil, "{\"Result\":\"Game was deleted successfully\"}", 200},
 }
 
 func TestMakeResponseForDeleteErr(t *testing.T) {

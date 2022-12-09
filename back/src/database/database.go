@@ -29,52 +29,52 @@ var ctx = context.TODO()
 var opts = options.Client().ApplyURI(uri)
 
 func HealthCheck() {
-	// Create a new client and connect to the server
+	// Инициализируем клиент для БД
 	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		panic(err)
 	}
+	// Пингуем базу для проверки соединения
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		panic(err)
+	}
+	// Разрываем соединение после выполнения функции
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
-	// Ping the primary
-	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		panic(err)
-	}
-	fmt.Println("Successfully connected and pinged.")
+	fmt.Println("Successfully connected and pinged")
 }
 
 func GetGames(gameId string) []Game {
 	var result []Game
-
+	var filter bson.M
+	// Инициализируем клиент
 	client, _ := mongo.Connect(ctx, opts)
+	// Подключаемся к базе games с коллекцией games_collection
 	col := client.Database("games").Collection("games_collection")
-	if gameId == "" {
-		cur, err := col.Find(ctx, bson.D{{}})
-		if err != nil {
-			log.Fatal(err)
-		}
-		for cur.Next(ctx) {
-			var elem Game
-			err := cur.Decode(&elem)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			result = append(result, elem)
-		}
-	} else {
-		var elem Game
+	// Если в кваери параметрах присутствует ID, то добавляем его в фильтр при поиске игры в БД
+	if gameId != "" {
 		objectId, err := primitive.ObjectIDFromHex(gameId)
 		if err != nil {
 			log.Println("Could not parse query param to ObjectID")
 		}
-		err = col.FindOne(ctx, bson.M{"_id": objectId}).Decode(&elem)
+		filter = bson.M{"_id": objectId}
+	}
+	// Ищем игры в базе
+	cur, err := col.Find(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Добавляем все найденные игры в слайс result
+	for cur.Next(ctx) {
+		var elem Game
+		err := cur.Decode(&elem)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		result = append(result, elem)
 	}
 
@@ -87,12 +87,16 @@ func GetGames(gameId string) []Game {
 }
 
 func AddNewGame(reqBody Game) (string, error) {
+	// Инициализируем клиент
 	client, _ := mongo.Connect(ctx, opts)
+	// Подключаемся к базе games с коллекцией games_collection
 	col := client.Database("games").Collection("games_collection")
+	// Создаем в коллекции запись игры с переданными параметрами
 	result, err := col.InsertOne(ctx, reqBody)
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Получаем ID созданной игры
 	gameId := result.InsertedID.(primitive.ObjectID).Hex()
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
@@ -103,8 +107,11 @@ func AddNewGame(reqBody Game) (string, error) {
 }
 
 func DeleteGame(reqBody Game) (int64, error) {
+	// Инициализируем клиент
 	client, _ := mongo.Connect(ctx, opts)
+	// Подключаемся к базе games с коллекцией games_collection
 	col := client.Database("games").Collection("games_collection")
+	// Удаляем игру с указанным ID
 	result, err := col.DeleteOne(ctx, bson.M{"_id": reqBody.ID})
 	if err != nil {
 		log.Println(err)

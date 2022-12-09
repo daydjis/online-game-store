@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func gamesHandler(writer http.ResponseWriter, request *http.Request) {
+func getGamesHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	writer.Header().Set("Content-Type", "application/json")
@@ -23,7 +23,7 @@ func gamesHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func newGamesHandler(writer http.ResponseWriter, request *http.Request) {
+func createGameHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	writer.Header().Set("Content-Type", "application/json")
@@ -68,8 +68,8 @@ func deleteGameHandler(writer http.ResponseWriter, request *http.Request) {
 
 func main() {
 	database.HealthCheck()
-	http.HandleFunc("/api/games", gamesHandler)
-	http.HandleFunc("/api/games/new", newGamesHandler)
+	http.HandleFunc("/api/games", getGamesHandler)
+	http.HandleFunc("/api/games/new", createGameHandler)
 	http.HandleFunc("/api/games/delete", deleteGameHandler)
 
 	err := http.ListenAndServe(":5000", nil)

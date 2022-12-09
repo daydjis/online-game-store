@@ -30,7 +30,7 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 		response = fmt.Sprint("{\"Result\":\"Game was not deleted,\"Error\": \"Wrong game id\"}")
 		status = 404
 	} else {
-		response = fmt.Sprint("{\"Result\":\"Game was deleted successfully}")
+		response = fmt.Sprint("{\"Result\":\"Game was deleted successfully\"}")
 		status = 200
 	}
 	return response, status

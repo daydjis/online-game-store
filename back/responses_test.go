@@ -64,8 +64,9 @@ type MakeResponseForRegisterParameters struct {
 }
 
 var MakeResponseForRegisterValues = []MakeResponseForRegisterParameters{
-	{"uniqID", errors.New("such a horrible error"), "{\"Result\":\"User was not created,\"Error\": \"such a horrible error\"}", 500},
-	{"uniqID", nil, "{\"Result\":\"User was created successfully\", \"id\": \"uniqID\"}", 200},
+	{"uniqID", errors.New("such a horrible error"), "{\"Result\":\"User was not created,\"Error\":\"such a horrible error\"}", 500},
+	{"uniqID", nil, "{\"Result\":\"User was created successfully\",\"id\": \"uniqID\"}", 200},
+	{"", errors.New("duplicated login"), "{\"Result\":\"User was not created,\"Error\":\"User with this login already exists\"}", 409},
 }
 
 func TestMakeResponseForRegister(t *testing.T) {

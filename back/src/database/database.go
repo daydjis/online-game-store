@@ -3,6 +3,7 @@ package database
 import (
 	"back/src/hashing"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -46,7 +47,7 @@ func HealthCheck() {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		panic(err)
 	}
-	// Разрываем соединение после выполнения функции
+	// Разрываем соединение c БД
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
@@ -133,6 +134,8 @@ func DeleteGame(reqBody Game) (int64, error) {
 }
 
 func RegisterNewUser(user User) (string, error) {
+	var userID string
+	var handledError error
 	// Хэшируем пароль пользователя
 	user.Password = hashing.HashPassword(user.Password)
 	// Инициализируем клиент
@@ -142,14 +145,19 @@ func RegisterNewUser(user User) (string, error) {
 	// Создаем пользователя с указанными параметрами
 	result, err := col.InsertOne(ctx, user)
 	if err != nil {
-		log.Fatal(err)
+		if errors.As(mongo.WriteError{}, &err) {
+			handledError = errors.New("duplicated login")
+			return userID, handledError
+		} else {
+			log.Fatal(err)
+		}
 	}
 	// Получаем ID созданного пользователя
-	userID := result.InsertedID.(primitive.ObjectID).Hex()
+	userID = result.InsertedID.(primitive.ObjectID).Hex()
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
-	return userID, err
+	return userID, handledError
 }

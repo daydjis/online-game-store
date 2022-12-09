@@ -37,15 +37,16 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 }
 
 func MakeResponseForRegister(userID string, err error) (string, int) {
-	var response string
-	var status int
 	if err != nil {
 		log.Println(err)
-		response = fmt.Sprintf("{\"Result\":\"User was not created,\"Error\": \"%s\"}", err)
-		status = 500
+		if err.Error() == "duplicated login" {
+			response := fmt.Sprint("{\"Result\":\"User was not created,\"Error\":\"User with this login already exists\"}")
+			return response, 409
+		}
+		response := fmt.Sprintf("{\"Result\":\"User was not created,\"Error\":\"%s\"}", err)
+		return response, 500
 	} else {
-		response = fmt.Sprintf("{\"Result\":\"User was created successfully\", \"id\": \"%s\"}", userID)
-		status = 200
+		response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"id\": \"%s\"}", userID)
+		return response, 200
 	}
-	return response, status
 }

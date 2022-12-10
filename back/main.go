@@ -1,8 +1,11 @@
 package main
 
 import (
+	"back/src/authentication"
 	"back/src/database"
+	"back/src/hashing"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -29,17 +32,28 @@ func createGameHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
-		var reqBody database.Game
+		var game database.Game
+		var response string
+		var status int
+		// Записываем тело запроса в переменную game
 		body, _ := io.ReadAll(request.Body)
-		if err := json.Unmarshal(body, &reqBody); err != nil {
+		if err := json.Unmarshal(body, &game); err != nil {
 			log.Fatal(err)
 		}
-		result, err := database.AddNewGame(reqBody)
-		response, status := MakeResponseForPost(result, err)
-		writer.WriteHeader(status)
-		err = json.NewEncoder(writer).Encode(response)
+		// Проверяем корректность переданных параметров игры
+		err := CheckCreateGameRequest(game)
 		if err != nil {
-			log.Fatal(err)
+			// Если параметры игры некорректны, возвращаем клиенту ошибку
+			response, status = MakeResponseForClientError(err)
+		} else {
+			// Если параметры игры прошли валидацию, то создаем запись в БД
+			result, err := database.AddNewGame(game)
+			response, status = MakeResponseForPost(result, err)
+		}
+		// Формируем ответ клиенту
+		writer.WriteHeader(status)
+		if _, errResp := io.WriteString(writer, response); errResp != nil {
+			log.Fatal(errResp)
 		}
 	}
 }
@@ -58,9 +72,8 @@ func deleteGameHandler(writer http.ResponseWriter, request *http.Request) {
 		deletedCount, err := database.DeleteGame(reqBody)
 		response, status := MakeResponseForDelete(deletedCount, err)
 		writer.WriteHeader(status)
-		err = json.NewEncoder(writer).Encode(response)
-		if err != nil {
-			log.Fatal(err)
+		if _, errResp := io.WriteString(writer, response); errResp != nil {
+			log.Fatal(errResp)
 		}
 	}
 }
@@ -91,9 +104,8 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 		// Формируем ответ клиенту
 		writer.WriteHeader(status)
-		err = json.NewEncoder(writer).Encode(response)
-		if err != nil {
-			log.Fatal(err)
+		if _, errResp := io.WriteString(writer, response); errResp != nil {
+			log.Fatal(errResp)
 		}
 	}
 }
@@ -101,7 +113,7 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 func loginHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
 		var user database.User
@@ -118,23 +130,48 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 			// Если логин и пароль не прошли валидацию, возвращаем ошибку и 404
 			response, status = MakeResponseForClientError(err)
 		} else {
-			// Если логин и пароль прошли валидацию, то авторизуем пользователя
-			err := database.CheckLogin(user)
-			response, status = MakeResponseForLogin(user.Login, err)
+			// Если логин и пароль прошли валидацию, то получаем пользователя с указанным логином из базы
+			userDB, errDB := database.GetUserByLogin(user)
+			if errDB != nil {
+				// Если возникла ошибка, например такого логина в базе нет, возвращаем ошибку
+				response, status = MakeResponseForLogin(userDB.Login, errDB)
+			} else {
+				// Если ошибка не возникла, сверяем пароль, указанный пользователем с паролем в БД
+				errPassword := hashing.CheckPassword(userDB.Password, user.Password)
+				response, status = MakeResponseForLogin(userDB.Login, errPassword)
+			}
 		}
 		// Формируем ответ клиенту
 		writer.WriteHeader(status)
-		err = json.NewEncoder(writer).Encode(response)
-		if err != nil {
-			log.Fatal(err)
+		if _, errResp := io.WriteString(writer, response); errResp != nil {
+			log.Fatal(errResp)
 		}
 	}
+}
+
+func CheckToken(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		writer.Header().Set("Content-Type", "application/json")
+		token := request.Header.Get("Authorization")
+		err := authentication.VerifyToken(token)
+		if err != nil {
+			writer.WriteHeader(http.StatusForbidden)
+			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+			if _, errResp := io.WriteString(writer, response); errResp != nil {
+				log.Fatal(errResp)
+			}
+			return
+		}
+		handler.ServeHTTP(writer, request)
+	})
 }
 
 func main() {
 	database.HealthCheck()
 	http.HandleFunc("/api/games", getGamesHandler)
-	http.HandleFunc("/api/games/new", createGameHandler)
+	http.Handle("/api/games/new", CheckToken(http.HandlerFunc(createGameHandler)))
 	http.HandleFunc("/api/games/delete", deleteGameHandler)
 	http.HandleFunc("/api/register", registrationHandler)
 	http.HandleFunc("/api/login", loginHandler)

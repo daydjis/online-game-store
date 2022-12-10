@@ -60,21 +60,21 @@ func MakeResponseForLogin(login string, err error) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if errors.Is(err, hashing.ErrWrongPassword) {
-			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login\",\"Error\":\"%s\"}", err)
 			return response, 404
 		} else if errors.Is(err, database.ErrWrongLogin) {
-			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login\",\"Error\":\"%s\"}", err)
 			return response, 404
 		}
 		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
 		return response, 500
 	}
 	jwt := authentication.GenerateToken(login)
-	response := fmt.Sprintf("{\"Result\":\"Success, welcome to the club, buddy!\",\"token\":\"%s\"}", jwt)
+	response := fmt.Sprintf("{\"Result\":\"Welcome to the club, buddy!\",\"Token\":\"%s\"}", jwt)
 	return response, 200
 }
 
 func MakeResponseForClientError(err error) (string, int) {
-	response := fmt.Sprintf("{\"Result\":\"Client error\",\"Error\":\"%s\"}", err)
+	response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
 	return response, 404
 }

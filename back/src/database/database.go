@@ -163,7 +163,7 @@ func RegisterNewUser(user User) (string, error) {
 	return userID, handledError
 }
 
-func CheckLogin(user User) error {
+func GetUserByLogin(user User) (User, error) {
 	var userDB User
 	// Инициализируем клиент
 	client, _ := mongo.Connect(ctx, opts)
@@ -173,11 +173,14 @@ func CheckLogin(user User) error {
 	err := col.FindOne(ctx, bson.M{"login": user.Login}).Decode(&userDB)
 	if err != nil {
 		if errors.As(mongo.ErrNoDocuments, &err) {
-			return ErrWrongLogin
+			return userDB, ErrWrongLogin
 		}
 		log.Fatal(err)
 	}
-	// Проверяем пароль пользователя
-	handledError := hashing.CheckPassword(userDB.Password, user.Password)
-	return handledError
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+	return userDB, nil
 }

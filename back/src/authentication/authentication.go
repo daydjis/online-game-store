@@ -1,22 +1,30 @@
 package authentication
 
 import (
-	"fmt"
+	"back/src/database"
+	"errors"
 	"github.com/golang-jwt/jwt"
 	"log"
 	"time"
 )
 
+type tokenClaims struct {
+	jwt.StandardClaims
+	Login string `json:"login"`
+}
+
 const superSecretKey = "ILovePython"
+
+var ErrUnauthorized = errors.New("unauthorized")
+var ErrUnableToExtractClaims = errors.New("unable to extract claims")
 
 func GenerateToken(login string) string {
 	// Генерируем токен
-	token := jwt.New(jwt.SigningMethodHS256)
-	// Задаем параметры токена
-	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(12 * time.Hour)
-	claims["authorized"] = true
-	claims["login"] = login
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
+		StandardClaims: jwt.StandardClaims{ExpiresAt: time.Now().Add(12 * time.Hour).Unix(),
+			IssuedAt: time.Now().Unix()},
+		Login: login,
+	})
 	// Подписываем токен заданным ключом
 	jwtToken, err := token.SignedString([]byte(superSecretKey))
 	if err != nil {
@@ -25,23 +33,29 @@ func GenerateToken(login string) string {
 	return jwtToken
 }
 
-func VerifyToken(clientToken string) {
-	token, err := jwt.Parse(clientToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte("AllYourBase"), nil
-	})
-
-	if token.Valid {
-		fmt.Println("You look nice today")
-	} else if ve, ok := err.(*jwt.ValidationError); ok {
-		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-			fmt.Println("That's not even a token")
-		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-			// Token is either expired or not active yet
-			fmt.Println("Timing is everything")
-		} else {
-			fmt.Println("Couldn't handle this token:", err)
-		}
-	} else {
-		fmt.Println("Couldn't handle this token:", err)
+func VerifyToken(clientToken string) error {
+	// Объявляем функцию внутри функции и делаем что-то непонятное =)
+	// Парсим токен
+	if len(clientToken) == 0 {
+		return ErrUnauthorized
 	}
+	token, err := jwt.ParseWithClaims(clientToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(superSecretKey), nil
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	// Вынимаем закодированный в токене логин и ищем в БД пользователя с таким логином
+	claims, ok := token.Claims.(*tokenClaims)
+	if ok && token.Valid {
+		var user database.User
+		user.Login = claims.Login
+		userDB, errDB := database.GetUserByLogin(user)
+		if errDB != nil || userDB.Login == "" {
+			return ErrUnauthorized
+		}
+		return nil
+	}
+	return ErrUnableToExtractClaims
 }

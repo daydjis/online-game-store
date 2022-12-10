@@ -2,7 +2,9 @@ package main
 
 import (
 	"back/src/database"
+	"back/src/hashing"
 	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -73,6 +75,32 @@ var MakeResponseForRegisterValues = []MakeResponseForRegisterParameters{
 func TestMakeResponseForRegister(t *testing.T) {
 	for _, arg := range MakeResponseForRegisterValues {
 		response, status := MakeResponseForRegister(arg.userID, arg.err)
+		if response != arg.expectedResponse {
+			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
+		}
+		if status != arg.expectedStatus {
+			t.Errorf("Expected status: %d, Got: %d", arg.expectedStatus, status)
+		}
+
+	}
+}
+
+type MakeResponseForLoginParameters struct {
+	err              error
+	expectedResponse string
+	expectedStatus   int
+}
+
+var MakeResponseForLoginValues = []MakeResponseForLoginParameters{
+	{hashing.ErrWrongPassword, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", hashing.ErrWrongPassword), 404},
+	{database.ErrWrongLogin, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", database.ErrWrongLogin), 404},
+	{errors.New("such a horrible error"), "{\"Result\":\"Unsuccessful login,\"Error\":\"such a horrible error\"}", 500},
+	{nil, "{\"Result\":\"Success, welcome to the club, buddy!\"}", 200},
+}
+
+func TestMakeResponseForLogin(t *testing.T) {
+	for _, arg := range MakeResponseForLoginValues {
+		response, status := MakeResponseForLogin(arg.err)
 		if response != arg.expectedResponse {
 			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
 		}

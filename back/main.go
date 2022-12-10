@@ -86,8 +86,8 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 			response, status = MakeResponseForClientError(err)
 		} else {
 			// Если логин и пароль прошли валидацию, то регистрируем пользователя
-			userID, err := database.RegisterNewUser(user)
-			response, status = MakeResponseForRegister(userID, err)
+			_, err := database.RegisterNewUser(user)
+			response, status = MakeResponseForRegister(user.Login, err)
 		}
 		// Формируем ответ клиенту
 		writer.WriteHeader(status)
@@ -120,7 +120,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 		} else {
 			// Если логин и пароль прошли валидацию, то авторизуем пользователя
 			err := database.CheckLogin(user)
-			response, status = MakeResponseForLogin(err)
+			response, status = MakeResponseForLogin(user.Login, err)
 		}
 		// Формируем ответ клиенту
 		writer.WriteHeader(status)

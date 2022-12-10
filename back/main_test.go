@@ -60,21 +60,20 @@ func TestMakeResponseForDelete(t *testing.T) {
 }
 
 type MakeResponseForRegisterParameters struct {
-	userID           string
+	login            string
 	err              interface{ Error() string }
 	expectedResponse string
 	expectedStatus   int
 }
 
 var MakeResponseForRegisterValues = []MakeResponseForRegisterParameters{
-	{"uniqID", errors.New("such a horrible error"), "{\"Result\":\"User was not created,\"Error\":\"such a horrible error\"}", 500},
-	{"uniqID", nil, "{\"Result\":\"User was created successfully\",\"id\": \"uniqID\"}", 200},
-	{"", database.ErrDuplicatedLogin, "{\"Result\":\"User was not created\",\"Error\":\"User with this login already exists\"}", 409},
+	{"login", errors.New("such a horrible error"), "{\"Result\":\"User was not created,\"Error\":\"such a horrible error\"}", 500},
+	{"login", database.ErrDuplicatedLogin, "{\"Result\":\"User was not created\",\"Error\":\"User with this login already exists\"}", 409},
 }
 
 func TestMakeResponseForRegister(t *testing.T) {
 	for _, arg := range MakeResponseForRegisterValues {
-		response, status := MakeResponseForRegister(arg.userID, arg.err)
+		response, status := MakeResponseForRegister(arg.login, arg.err)
 		if response != arg.expectedResponse {
 			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
 		}
@@ -86,21 +85,21 @@ func TestMakeResponseForRegister(t *testing.T) {
 }
 
 type MakeResponseForLoginParameters struct {
+	login            string
 	err              error
 	expectedResponse string
 	expectedStatus   int
 }
 
 var MakeResponseForLoginValues = []MakeResponseForLoginParameters{
-	{hashing.ErrWrongPassword, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", hashing.ErrWrongPassword), 404},
-	{database.ErrWrongLogin, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", database.ErrWrongLogin), 404},
-	{errors.New("such a horrible error"), "{\"Result\":\"Unsuccessful login,\"Error\":\"such a horrible error\"}", 500},
-	{nil, "{\"Result\":\"Success, welcome to the club, buddy!\"}", 200},
+	{"login", hashing.ErrWrongPassword, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", hashing.ErrWrongPassword), 404},
+	{"login", database.ErrWrongLogin, fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", database.ErrWrongLogin), 404},
+	{"login", errors.New("such a horrible error"), "{\"Result\":\"Unsuccessful login,\"Error\":\"such a horrible error\"}", 500},
 }
 
 func TestMakeResponseForLogin(t *testing.T) {
 	for _, arg := range MakeResponseForLoginValues {
-		response, status := MakeResponseForLogin(arg.err)
+		response, status := MakeResponseForLogin(arg.login, arg.err)
 		if response != arg.expectedResponse {
 			t.Errorf("Expected response: %s, Got: %s", arg.expectedResponse, response)
 		}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"back/src/authentication"
 	"back/src/database"
 	"back/src/hashing"
 	_ "back/src/hashing"
@@ -40,7 +41,7 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 	return response, status
 }
 
-func MakeResponseForRegister(userID string, err error) (string, int) {
+func MakeResponseForRegister(login string, err error) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "duplicated login" {
@@ -50,11 +51,12 @@ func MakeResponseForRegister(userID string, err error) (string, int) {
 		response := fmt.Sprintf("{\"Result\":\"User was not created,\"Error\":\"%s\"}", err)
 		return response, 500
 	}
-	response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"id\": \"%s\"}", userID)
+	jwt := authentication.GenerateToken(login)
+	response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"token\":\"%s\"}", jwt)
 	return response, 200
 }
 
-func MakeResponseForLogin(err error) (string, int) {
+func MakeResponseForLogin(login string, err error) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if errors.Is(err, hashing.ErrWrongPassword) {
@@ -67,7 +69,8 @@ func MakeResponseForLogin(err error) (string, int) {
 		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
 		return response, 500
 	}
-	response := fmt.Sprint("{\"Result\":\"Success, welcome to the club, buddy!\"}")
+	jwt := authentication.GenerateToken(login)
+	response := fmt.Sprintf("{\"Result\":\"Success, welcome to the club, buddy!\",\"token\":\"%s\"}", jwt)
 	return response, 200
 }
 

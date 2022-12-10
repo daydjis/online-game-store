@@ -110,3 +110,26 @@ func TestMakeResponseForLogin(t *testing.T) {
 
 	}
 }
+
+type CheckLoginParameters struct {
+	database.User
+	expectedError error
+}
+
+var CheckLoginValues = []CheckLoginParameters{
+	{User: database.User{Login: "login"}, expectedError: ErrLoginLength},
+	{User: database.User{Login: "loginWhichIsSuperExtremelyLongForValidation"}, expectedError: ErrLoginLength},
+	{User: database.User{Login: "normal_login", Password: "pass"}, expectedError: ErrPasswordLength},
+	{User: database.User{Login: "normal_login", Password: "passwordWhichIsSuperExtremelyLongForValidation"}, expectedError: ErrPasswordLength},
+	{User: database.User{Login: "loginForbidden!", Password: "normal_pa55sword"}, expectedError: ErrForbiddenCharsLogin},
+	{User: database.User{Login: "normal_login", Password: "passwordBad/"}, expectedError: ErrForbiddenCharsPassword},
+}
+
+func TestCheckLoginRequest(t *testing.T) {
+	for _, arg := range CheckLoginValues {
+		err := CheckLoginRequest(arg.User)
+		if err != arg.expectedError {
+			t.Errorf("Wrong error, got: %s, expected: %s", err, arg.expectedError.Error())
+		}
+	}
+}

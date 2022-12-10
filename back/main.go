@@ -72,12 +72,24 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
 		var user database.User
+		var response string
+		var status int
+		// Записываем тело запроса в переменную user
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &user); err != nil {
 			log.Fatal(err)
 		}
-		userID, err := database.RegisterNewUser(user)
-		response, status := MakeResponseForRegister(userID, err)
+		// Проверяем корректность логина и пароля
+		err := CheckLoginRequest(user)
+		if err != nil {
+			// Если логин и пароль не прошли валидацию, возвращаем ошибку и 404
+			response, status = MakeResponseForClientError(err)
+		} else {
+			// Если логин и пароль прошли валидацию, то регистрируем пользователя
+			userID, err := database.RegisterNewUser(user)
+			response, status = MakeResponseForRegister(userID, err)
+		}
+		// Формируем ответ клиенту
 		writer.WriteHeader(status)
 		err = json.NewEncoder(writer).Encode(response)
 		if err != nil {
@@ -93,12 +105,24 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
 		var user database.User
+		var response string
+		var status int
+		// Записываем тело запроса в переменную user
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &user); err != nil {
 			log.Fatal(err)
 		}
-		err := database.CheckLogin(user)
-		response, status := MakeResponseForLogin(err)
+		// Проверяем корректность логина и пароля
+		err := CheckLoginRequest(user)
+		if err != nil {
+			// Если логин и пароль не прошли валидацию, возвращаем ошибку и 404
+			response, status = MakeResponseForClientError(err)
+		} else {
+			// Если логин и пароль прошли валидацию, то авторизуем пользователя
+			err := database.CheckLogin(user)
+			response, status = MakeResponseForLogin(err)
+		}
+		// Формируем ответ клиенту
 		writer.WriteHeader(status)
 		err = json.NewEncoder(writer).Encode(response)
 		if err != nil {

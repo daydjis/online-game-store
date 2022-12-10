@@ -70,3 +70,8 @@ func MakeResponseForLogin(err error) (string, int) {
 	response := fmt.Sprint("{\"Result\":\"Success, welcome to the club, buddy!\"}")
 	return response, 200
 }
+
+func MakeResponseForClientError(err error) (string, int) {
+	response := fmt.Sprintf("{\"Result\":\"Client error\",\"Error\":\"%s\"}", err)
+	return response, 404
+}

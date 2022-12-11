@@ -29,10 +29,10 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 	var status int
 	if err != nil {
 		log.Println(err)
-		response = fmt.Sprintf("{\"Result\":\"Game was not deleted,\"Error\": \"%s\"}", err)
+		response = fmt.Sprintf("{\"Result\":\"Game was not deleted\",\"Error\": \"%s\"}", err)
 		status = 500
 	} else if deletedCount == 0 {
-		response = fmt.Sprint("{\"Result\":\"Game was not deleted,\"Error\": \"Wrong game id\"}")
+		response = fmt.Sprint("{\"Result\":\"Game was not deleted\",\"Error\":\"Wrong game id\"}")
 		status = 404
 	} else {
 		response = fmt.Sprint("{\"Result\":\"Game was deleted successfully\"}")
@@ -66,7 +66,7 @@ func MakeResponseForLogin(login string, err error) (string, int) {
 			response := fmt.Sprintf("{\"Result\":\"Unsuccessful login\",\"Error\":\"%s\"}", err)
 			return response, 404
 		}
-		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login,\"Error\":\"%s\"}", err)
+		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login\",\"Error\":\"%s\"}", err)
 		return response, 500
 	}
 	jwt := authentication.GenerateToken(login)

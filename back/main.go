@@ -172,7 +172,7 @@ func main() {
 	database.HealthCheck()
 	http.HandleFunc("/api/games", getGamesHandler)
 	http.Handle("/api/games/new", CheckToken(http.HandlerFunc(createGameHandler)))
-	http.HandleFunc("/api/games/delete", deleteGameHandler)
+	http.Handle("/api/games/delete", CheckToken(http.HandlerFunc(deleteGameHandler)))
 	http.HandleFunc("/api/register", registrationHandler)
 	http.HandleFunc("/api/login", loginHandler)
 

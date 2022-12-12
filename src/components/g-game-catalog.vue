@@ -2,7 +2,7 @@
     <div class="m">
         <h1>Каталог</h1>
         <div class="game-catalog">
-            <g-game-item v-for="game in GAMES" :key="game._id" :game_data="game" />
+            <g-game-item v-for="game in GAMES" :key="game._id" :game_data="game" @addToCart="addToCart" />
         </div>
     </div>
 </template>
@@ -22,13 +22,17 @@ export default {
     },
     methods: {
         ...mapActions([
-            "GET_GAMES_FROM_API"
+            "GET_GAMES_FROM_API",
+            "ADD_GAME_TO_CART"
         ]),
+        addToCart(data) {
+            this.ADD_GAME_TO_CART(data)
+            console.log(data);
+        }
     },
     mounted() {
         this.GET_GAMES_FROM_API()
     }
-
 }
 </script>
 

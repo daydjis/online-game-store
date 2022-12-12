@@ -1,5 +1,5 @@
 <template>
-  <g-main-wrapper />
+  <router-view><g-main-wrapper /></router-view>
 </template>
 
 <script>

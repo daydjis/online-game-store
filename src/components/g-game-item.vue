@@ -6,7 +6,7 @@
             <g-game-genre v-for="genre in game_data.genres" :key="genre" :game_genre="genre" />
         </div>
         <span class="game-price">{{ game_data.price }} руб.</span>
-        <button type="button" class="btn btn-outline-success">Купить</button>
+        <button type="button" class="btn btn-outline-success" @click="addToCart">Купить</button>
     </div>
 </template>
 
@@ -24,6 +24,11 @@ export default {
             defautl() {
                 return {}
             }
+        }
+    },
+    methods: {
+        addToCart() {
+            this.$emit("addToCart", this.game_data)
         }
     }
 }

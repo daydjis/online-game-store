@@ -1,16 +1,17 @@
 <template>
-  <router-view><g-main-wrapper /></router-view>
+  <div>
+    <g-header />
+  </div>
+  <router-view></router-view>
 </template>
 
+
 <script>
-import GMainWrapper from './components/g-main-wrapper.vue'
+import gHeader from './components/g-header.vue'
 
 
 export default {
-  name: 'App',
-  components: {
-    GMainWrapper
-  }
+  components: { gHeader }
 }
 </script>
 

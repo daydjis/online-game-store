@@ -40,7 +40,13 @@ func createGameHandler(writer http.ResponseWriter, request *http.Request) {
 		// Записываем тело запроса в переменную game
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &game); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			writer.WriteHeader(http.StatusBadRequest)
+			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+			if _, errResp := io.WriteString(writer, response); errResp != nil {
+				log.Fatal(errResp)
+			}
+			return
 		}
 		// Проверяем корректность переданных параметров игры
 		err := CheckCreateGameRequest(game)
@@ -69,7 +75,13 @@ func deleteGameHandler(writer http.ResponseWriter, request *http.Request) {
 		var reqBody database.Game
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &reqBody); err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			writer.WriteHeader(http.StatusBadRequest)
+			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+			if _, errResp := io.WriteString(writer, response); errResp != nil {
+				log.Fatal(errResp)
+			}
+			return
 		}
 		deletedCount, err := database.DeleteGame(reqBody)
 		response, status := MakeResponseForDelete(deletedCount, err)

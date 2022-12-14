@@ -29,7 +29,11 @@ export default {
     methods: {
         addToCart() {
             this.$emit("addToCart", this.game_data)
+        },
+        gameInfo() {
+            console.log();
         }
+
     }
 }
 </script>

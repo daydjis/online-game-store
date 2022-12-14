@@ -5,6 +5,16 @@ const store = createStore({
   state: {
     games: [],
     cart: [],
+    isLoading: false,
+    newGameForm: {
+      title: '',
+      description: '',
+      price: 0,
+      genres: [],
+      video: '',
+      imageDescription: '',
+      image: '',
+    },
   },
 
   mutations: {
@@ -30,11 +40,18 @@ const store = createStore({
     REMOVE_FROM_CART: (state, gameIndex) => {
       state.cart.splice(gameIndex, 1)
     },
+    ISLOADING: (state, loading) => {
+      state.isLoading = loading
+    },
+    CREATE_NEW_GAME: (state, newGameInfo) => {
+      state.newGameForm = newGameInfo
+    },
   },
 
   actions: {
     async GET_GAMES_FROM_API({ commit }) {
       try {
+        commit('ISLOADING', true)
         const games = await axios('http://localhost:5000/api/games', {
           method: 'GET',
         })
@@ -43,6 +60,35 @@ const store = createStore({
       } catch (e) {
         console.log(e)
         return e
+      } finally {
+        commit('ISLOADING', false)
+      }
+    },
+    async POST_NEW_GAME({ commit }, newGameInfo) {
+      try {
+        commit('CREATE_NEW_GAME', newGameInfo)
+        await axios
+          .post('http://localhost:5000/api/games/new', this.state.newGameForm, {
+            method: 'POST',
+          })
+          .then(function (response) {
+            console.log('УРА', response)
+          })
+      } catch (error) {
+        console.log('Ошибка пост запроса', error)
+        console.log('NEW_GAME')
+      }
+    },
+    async REGISTER_NEW_USER({ commit }, userInfo) {
+      try {
+        commit('CREATE_NEW_GAME', 'NEW_GAME')
+        await axios
+          .post('http://localhost:5000/api/games/new', userInfo)
+          .then(function (response) {
+            console.log(response)
+          })
+      } catch (error) {
+        console.log('Ошибка пост запроса', error)
       }
     },
 
@@ -60,6 +106,12 @@ const store = createStore({
     },
     CART(state) {
       return state.cart
+    },
+    LOADER(state) {
+      return state.isLoading
+    },
+    NEW_GAME(state) {
+      return state.newGameForm
     },
   },
 })

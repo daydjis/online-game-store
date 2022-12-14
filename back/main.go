@@ -187,11 +187,11 @@ func CheckToken(handler http.Handler) http.Handler {
 		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		writer.Header().Set("Content-Type", "application/json")
-		cookie, err := request.Cookie("auth_cookie")
 		if request.Method == http.MethodOptions {
 			writer.WriteHeader(http.StatusOK)
 			return
 		}
+		cookie, err := request.Cookie("auth_cookie")
 		if err != nil {
 			log.Println(err)
 			writer.WriteHeader(http.StatusForbidden)

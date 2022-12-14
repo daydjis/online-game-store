@@ -6,11 +6,13 @@ const store = createStore({
     games: [],
     cart: [],
     isLoading: false,
-    newGame: {
-      title: 'game',
-      description: 'qwe',
-      price: 'qwe',
+    newGameForm: {
+      title: '',
+      description: '',
+      price: 0,
       genres: [],
+      video: '',
+      imageDescription: '',
       image: '',
     },
   },
@@ -42,7 +44,7 @@ const store = createStore({
       state.isLoading = loading
     },
     CREATE_NEW_GAME: (state, newGameInfo) => {
-      state.newGame = newGameInfo
+      state.newGameForm = newGameInfo
     },
   },
 
@@ -62,19 +64,19 @@ const store = createStore({
         commit('ISLOADING', false)
       }
     },
-    async POST_NEW_GAME(NEW_GAME) {
+    async POST_NEW_GAME({ commit }, newGameInfo) {
       try {
-        const newgame = await axios
-          .post('http://localhost:5000/api/games/new', NEW_GAME.state.newGame, {
+        commit('CREATE_NEW_GAME', newGameInfo)
+        await axios
+          .post('http://localhost:5000/api/games/new', this.state.newGameForm, {
             method: 'POST',
           })
           .then(function (response) {
-            console.log(response)
+            console.log('УРА', response)
           })
-        return newgame
       } catch (error) {
         console.log('Ошибка пост запроса', error)
-        console.log(NEW_GAME.state.newGame)
+        console.log('NEW_GAME')
       }
     },
     async REGISTER_NEW_USER({ commit }, userInfo) {
@@ -109,7 +111,7 @@ const store = createStore({
       return state.isLoading
     },
     NEW_GAME(state) {
-      return state.newGame
+      return state.newGameForm
     },
   },
 })

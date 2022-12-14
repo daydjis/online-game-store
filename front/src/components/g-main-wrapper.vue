@@ -39,7 +39,8 @@ export default {
 
 .home-page_wrapper-cart-container {
     position: absolute;
-    right: 20px;
+    bottom: 800px;
+    right: 180px;
 }
 
 .home-page_wrapper-cart-icon {

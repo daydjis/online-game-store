@@ -5,7 +5,7 @@ import (
 	"back/src/database"
 	"back/src/hashing"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,6 +30,7 @@ func getGamesHandler(writer http.ResponseWriter, request *http.Request) {
 func createGameHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	writer.Header().Set("Content-Type", "application/json")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
@@ -172,26 +173,31 @@ func CheckToken(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Access-Control-Allow-Origin", "*")
 		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		writer.Header().Set("Content-Type", "application/json")
-		cookie, err := request.Cookie("auth_cookie")
-		if err != nil {
-			log.Println(err)
-			writer.WriteHeader(http.StatusForbidden)
-			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
-			if _, errResp := io.WriteString(writer, response); errResp != nil {
-				log.Fatal(errResp)
-			}
+		if request.Method  == "OPTIONS" {
+			writer.WriteHeader(http.StatusOK)
 			return
 		}
-		err = authentication.VerifyToken(cookie.Value)
-		if err != nil {
-			writer.WriteHeader(http.StatusForbidden)
-			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
-			if _, errResp := io.WriteString(writer, response); errResp != nil {
-				log.Fatal(errResp)
-			}
-			return
-		}
+		// cookie, err := request.Cookie("auth_cookie")
+		// if err != nil {
+		// 	log.Println(err)
+		// 	writer.WriteHeader(http.StatusForbidden)св 
+		// 	response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+		// 	if _, errResp := io.WriteString(writer, response); errResp != nil {
+		// 		log.Fatal(errResp)
+		// 	}
+		// 	return
+		// }
+		// err = authentication.VerifyToken(cookie.Value)
+		// if err != nil {
+		// 	writer.WriteHeader(http.StatusForbidden)
+		// 	response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+		// 	if _, errResp := io.WriteString(writer, response); errResp != nil {
+		// 		log.Fatal(errResp)
+		// 	}
+		// 	return
+		// }
 		handler.ServeHTTP(writer, request)
 	})
 }

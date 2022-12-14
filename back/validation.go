@@ -4,6 +4,7 @@ import (
 	"back/src/database"
 	"errors"
 	"regexp"
+	"fmt"
 )
 
 var ErrLoginLength = errors.New("login should contain from 8 to 24 symbols")
@@ -79,6 +80,7 @@ func CheckCreateGameRequest(game database.Game) error {
 	}
 	// Проверяем описание картинки
 	if len(game.ImageDescription) < 5 || len(game.ImageDescription) > 20 {
+		fmt.Println(len(game.ImageDescription))
 		return ErrImageDescription
 	}
 	return nil

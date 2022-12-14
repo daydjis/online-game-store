@@ -30,6 +30,7 @@ func getGamesHandler(writer http.ResponseWriter, request *http.Request) {
 func createGameHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	writer.Header().Set("Content-Type", "application/json")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodPost {
@@ -172,6 +173,7 @@ func CheckToken(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Access-Control-Allow-Origin", "*")
 		writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		writer.Header().Set("Content-Type", "application/json")
 		cookie, err := request.Cookie("auth_cookie")
 		if err != nil {

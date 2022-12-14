@@ -1,9 +1,15 @@
 <template>
-    <div class="m">
+    <div>
         <h1>Каталог</h1>
-        <div class="game-catalog">
+        <div class="game-catalog" v-if="!LOADER">
             <g-game-item v-for="game in GAMES" :key="game._id" :game_data="game" @addToCart="addToCart" />
         </div>
+        <div class="d-flex justify-content-center" v-else>
+            <div class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -17,7 +23,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            "GAMES"
+            "GAMES",
+            "LOADER"
         ])
     },
     methods: {

@@ -26,14 +26,31 @@
                     <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Цена">
                 </div>
             </form>
-            <button type="button" class="btn btn-outline-primary">Добавить</button>
+            <button type="button" class="btn btn-outline-primary" @click="POST_NEW_GAME">Добавить</button>
         </div>
     </div>
 </template>
 
 <script>
-export default {
+import { mapGetters, mapActions } from 'vuex'
 
+export default {
+    computed: {
+        ...mapGetters([
+            "NEW_GAME"
+        ]),
+
+    },
+    methods: {
+        ...mapActions([
+            'CREATE_NEW_GAME',
+            'POST_NEW_GAME'
+        ])
+    },
+
+    data() {
+
+    }
 
 }
 </script>

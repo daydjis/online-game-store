@@ -48,11 +48,11 @@ var ErrImageDescription = errors.New("image description should contain from 5 to
 
 func CheckCreateGameRequest(game database.Game) error {
 	// Проверяем длину названия игры
-	if len(game.Title) < 3 || len(game.Title) > 24 {
+	if len([]rune(game.Title)) < 3 || len([]rune(game.Title)) > 24 {
 		return ErrTitleLength
 	}
 	// Проверяем длину поля описание игры
-	if len(game.Description) < 10 {
+	if len([]rune(game.Description)) < 10 {
 		return ErrDescriptionLength
 	}
 	// Проверяем цену игры
@@ -65,20 +65,20 @@ func CheckCreateGameRequest(game database.Game) error {
 	}
 	// Проверяем указанные жанры
 	for _, genre := range game.Genres {
-		if len(genre) < 3 || len(genre) > 20 {
+		if len([]rune(genre)) < 3 || len([]rune(genre)) > 20 {
 			return ErrGenreName
 		}
 	}
 	// Проверяем строку с картинкой
-	if len(game.Image) < 50 {
+	if len([]rune(game.Image)) < 50 {
 		return ErrImage
 	}
 	// Проверяем строку с видео
-	if len(game.Video) < 5 {
+	if len([]rune(game.Video)) < 5 {
 		return ErrVideo
 	}
 	// Проверяем описание картинки
-	if len(game.ImageDescription) < 5 || len(game.ImageDescription) > 20 {
+	if len([]rune(game.ImageDescription)) < 5 || len([]rune(game.ImageDescription)) > 20 {
 		return ErrImageDescription
 	}
 	return nil

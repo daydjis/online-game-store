@@ -1,9 +1,6 @@
 <template>
     <router-view>
         <div class="home-page_wrapper-cart-container">
-            <router-link to="/cart">
-                <button class="home-page_wrapper-cart-icon">В корзине: {{ CART.length }}</button>
-            </router-link>
         </div>
         <div class="home-page_wrapper shadow p-3 mb-5 bg-body rounded">
             <g-game-catalog />

@@ -3,9 +3,16 @@ import { createStore } from 'vuex'
 
 const store = createStore({
   state: {
+    // сюда кладём игры после гет запроса
+
     games: [],
+    // корзина
+
     cart: [],
+    // лоадер
+
     isLoading: false,
+    // форма для игры
     newGameForm: {
       title: '',
       description: '',
@@ -15,6 +22,9 @@ const store = createStore({
       imageDescription: '',
       image: '',
     },
+    // карточка игры
+
+    setCurrentGame: {},
   },
 
   mutations: {
@@ -45,6 +55,9 @@ const store = createStore({
     },
     CREATE_NEW_GAME: (state, newGameInfo) => {
       state.newGameForm = newGameInfo
+    },
+    SET_CURRENT_GAME: (state, game) => {
+      state.setCurrentGame = game
     },
   },
 
@@ -92,6 +105,10 @@ const store = createStore({
       }
     },
 
+    SET_CURRENT_GAME: ({ commit }, game) => {
+      commit('SET_CURRENT_GAME', game)
+    },
+
     ADD_GAME_TO_CART({ commit }, game) {
       commit('SET_CART', game)
     },
@@ -112,6 +129,9 @@ const store = createStore({
     },
     NEW_GAME(state) {
       return state.newGameForm
+    },
+    CURRENT_GAME(state) {
+      return state.setCurrentGame
     },
   },
 })

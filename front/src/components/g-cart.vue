@@ -9,7 +9,7 @@
                     @deleteItemFromCart="deleteGameFromCart(index)" />
             </div>
 
-            <button class="g-cart__pay-btn btn-success">
+            <button class="g-cart__pay-btn">
                 <h1>Всего к оплате: {{ totalPrice }} руб.</h1>
             </button>
         </div>
@@ -65,6 +65,7 @@ export default {
             "CART"
         ])
     }
+
 }
 </script>
 
@@ -73,6 +74,7 @@ export default {
     max-width: 1200px;
     min-height: 1000px;
     margin: 0 auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -91,6 +93,7 @@ export default {
     color: white;
     border: none;
     border-radius: 5px;
+    padding: 5px;
     transition: 1s;
 }
 

@@ -45,7 +45,6 @@ export default {
     align-items: center;
     width: 100%;
     border-radius: 25px;
-    margin: 5px;
     padding: 20px;
 }
 

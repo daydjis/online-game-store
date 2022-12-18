@@ -1,22 +1,22 @@
 <template>
     <div className="game-page">
-        <h1 className="game-page__title">{{ CURRENT_GAME.title }}</h1>
+        <h1 className="game-page__title">{{ GAME_ID.title }}</h1>
         <div className="game-page__content shadow p-3 mb-5 bg-body rounded">
             <div className="game-page__left ">
-                <iframe :src="CURRENT_GAME.video" width="90%" height="400px" title="YouTube video player"
+                <iframe :src="GAME_ID.video" width="90%" height="400px" title="YouTube video player"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
             <div className="game-page__right">
-                <gGameCover v-bind:image="CURRENT_GAME.image" />
+                <gGameCover v-bind:image="GAME_ID.image" />
                 <div class="shadow p-3 mb-8 bg-body rounded">
-                    <p>{{ CURRENT_GAME.description }}</p>
+                    <p>{{ GAME_ID.description }}</p>
                     <p className="secondary-text">Популярные метки для этого продукта:</p>
-                    <div className='game-item__genre-container' v-for="genre in CURRENT_GAME.genres" :key="genre">
+                    <div className='game-item__genre-container' v-for="genre in GAME_ID.genres" :key="genre">
                         {{ genre }}
                     </div>
                     <div className="game-page__buy-game">
-                        <button type="button" class="btn btn-primary btn-lg" @click="ADD_GAME_TO_CART(CURRENT_GAME)">
+                        <button type="button" class="btn btn-primary btn-lg" @click="ADD_GAME_TO_CART(GAME_ID)">
                             Купить</button>
                     </div>
                 </div>
@@ -40,15 +40,21 @@ export default {
     },
     methods: {
         ...mapActions([
-            "ADD_GAME_TO_CART"
+            "ADD_GAME_TO_CART",
+            "GET_CURRENT_GAME"
         ])
     },
 
     computed: {
         ...mapGetters([
             "CURRENT_GAME",
-            "CART"
+            "CART",
+            "GAME_ID"
         ]),
+    },
+    mounted() {
+        console.log(this.$route.params.title) 
+        this.GET_CURRENT_GAME(this.$route.params.title)
     }
 
 }

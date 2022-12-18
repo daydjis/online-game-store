@@ -36,12 +36,14 @@ export default {
             this.$emit("addToCart", this.game_data)
         },
         ...mapActions([
-            'SET_CURRENT_GAME'
+            'SET_CURRENT_GAME',
+            "GET_CURRENT_GAME"
         ]),
 
         gameInfo() {
             this.SET_CURRENT_GAME(this.game_data)
-            this.$router.push({ path: `/game/${this.game_data.title}` })
+            this.$router.push({ path: `/games/${this.game_data.id}` })
+            this.GET_CURRENT_GAME(this.game_data.id)
         },
     }
 }

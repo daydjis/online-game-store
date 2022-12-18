@@ -4,13 +4,10 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     // сюда кладём игры после гет запроса
-
     games: [],
     // корзина
-
     cart: [],
     // лоадер
-
     isLoading: false,
     // форма для игры
     newGameForm: {
@@ -23,8 +20,9 @@ const store = createStore({
       image: '',
     },
     // карточка игры
-
     setCurrentGame: {},
+    // game info
+    gameId: {},
   },
 
   mutations: {
@@ -59,9 +57,27 @@ const store = createStore({
     SET_CURRENT_GAME: (state, game) => {
       state.setCurrentGame = game
     },
+    SET_GAME_ID: (state, gameId) => {
+      state.gameId = gameId[0]
+    }
   },
 
   actions: {
+    async GET_CURRENT_GAME({ commit }, gameid) {
+      try {
+        commit('ISLOADING', true)
+        const game = await axios('http://localhost:5000/api/games', { params: { id: gameid } }, {
+          method: 'GET',
+        })
+        commit('SET_GAME_ID', game.data)
+        return game
+      } catch (e) {
+        console.log(e)
+        return e
+      } finally {
+        commit('ISLOADING', false)
+      }
+    },
     async GET_GAMES_FROM_API({ commit }) {
       try {
         commit('ISLOADING', true)
@@ -92,11 +108,11 @@ const store = createStore({
         console.log('NEW_GAME')
       }
     },
-    async REGISTER_NEW_USER({ commit }, userInfo) {
+    async LOGIN_USER({ commit }, userInfo) {
       try {
         commit('CREATE_NEW_GAME', 'NEW_GAME')
         await axios
-          .post('http://localhost:5000/api/games/new', userInfo)
+          .post('http://localhost:5000/api/login', userInfo)
           .then(function (response) {
             console.log(response)
           })
@@ -133,6 +149,9 @@ const store = createStore({
     CURRENT_GAME(state) {
       return state.setCurrentGame
     },
+    GAME_ID(state) {
+      return state.gameId
+    }
   },
 })
 

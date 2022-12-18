@@ -14,6 +14,6 @@ export default createRouter({
     { path: '/create/game', component: gAddNewGame },
     { path: '/auth/register', component: gAuthRegister },
     { path: '/auth/login', component: gAuthLogin },
-    { path: '/game/:title', component: gGameInfo, sensitive: true },
+    { path: '/games/:title', component: gGameInfo, sensitive: true },
   ],
 })

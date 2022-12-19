@@ -23,6 +23,10 @@ const store = createStore({
     setCurrentGame: {},
     // game info
     gameId: {},
+    userInfo: {
+      login: '',
+      password: '',
+    },
   },
 
   mutations: {
@@ -59,16 +63,23 @@ const store = createStore({
     },
     SET_GAME_ID: (state, gameId) => {
       state.gameId = gameId[0]
-    }
+    },
+    SET_USER_INFO: (state, authInfo) => {
+      state.userInfo = authInfo
+    },
   },
 
   actions: {
     async GET_CURRENT_GAME({ commit }, gameid) {
       try {
         commit('ISLOADING', true)
-        const game = await axios('http://localhost:5000/api/games', { params: { id: gameid } }, {
-          method: 'GET',
-        })
+        const game = await axios(
+          'http://localhost:5000/api/games',
+          { params: { id: gameid } },
+          {
+            method: 'GET',
+          }
+        )
         commit('SET_GAME_ID', game.data)
         return game
       } catch (e) {
@@ -108,13 +119,14 @@ const store = createStore({
         console.log('NEW_GAME')
       }
     },
-    async LOGIN_USER({ commit }, userInfo) {
+    async LOGIN_USER({ commit }, authInfo) {
       try {
-        commit('CREATE_NEW_GAME', 'NEW_GAME')
+        commit('SET_USER_INFO', authInfo)
         await axios
-          .post('http://localhost:5000/api/login', userInfo)
+          .post('http://localhost:5000/api/login', this.state.userInfo)
           .then(function (response) {
             console.log(response)
+            console.log(document.cookie)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -151,7 +163,10 @@ const store = createStore({
     },
     GAME_ID(state) {
       return state.gameId
-    }
+    },
+    USER_INFO(state) {
+      return state.userInfo
+    },
   },
 })
 

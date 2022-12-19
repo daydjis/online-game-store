@@ -18,7 +18,7 @@
                     <a class="nav-link active black" aria-current="page" href="#">Ещё не зарегистрировались?</a>
                 </router-link>
 
-                <button type="submit" class="btn btn-primary" @click="LOGIN_USER(userLogin)">Submit</button>
+                <button class="btn btn-primary" @click="LOGIN_USER(userLogin)">Submit</button>
             </form>
         </div>
     </div>

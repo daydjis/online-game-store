@@ -1,21 +1,27 @@
 <template>
-    <div className="game-page">
-        <h1 className="game-page__title">{{ GAME_ID.title }}</h1>
-        <div className="game-page__content shadow p-3 mb-5 bg-body rounded">
-            <div className="game-page__left ">
-                <iframe :src="GAME_ID.video" width="90%" height="400px" title="YouTube video player"
-                    frameBorder="0"
+    <div class="game-page">
+        <h1 class="game-page__title">{{ GAME_ID.title }}</h1>
+        <div class="game-page__content shadow p-3 mb-5 bg-body rounded">
+            <div class="game-page__left ">
+                <iframe :src="GAME_ID.video" width="90%" height="400px" title="YouTube video player" frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
             </div>
-            <div className="game-page__right">
+            <div class="game-page__right">
                 <gGameCover v-bind:image="GAME_ID.image" />
-                <div class="shadow p-3 mb-8 bg-body rounded">
-                    <p>{{ GAME_ID.description }}</p>
-                    <p className="secondary-text">Популярные метки для этого продукта:</p>
-                    <div className='game-item__genre-container' v-for="genre in GAME_ID.genres" :key="genre">
-                        {{ genre }}
+                <div class="game-info__content shadow p-3 mb-8 bg-body rounded">
+                    <div>
+                        <p>{{ GAME_ID.description }}</p>
                     </div>
-                    <div className="game-page__buy-game">
+
+                    <div>
+                        <p class="secondary-text">Популярные метки для этого продукта:</p>
+                    </div>
+                    <div>
+                        <div class='game-item__g' v-for="genre in GAME_ID.genres" :key="genre">
+                            {{ genre }}
+                        </div>
+                    </div>
+                    <div class="game-page__buy-game">
                         <button type="button" class="btn btn-primary btn-lg" @click="ADD_GAME_TO_CART(GAME_ID)">
                             Купить</button>
                     </div>
@@ -53,7 +59,7 @@ export default {
         ]),
     },
     mounted() {
-        console.log(this.$route.params.title) 
+        console.log(this.$route.params.title)
         this.GET_CURRENT_GAME(this.$route.params.title)
     }
 
@@ -61,6 +67,21 @@ export default {
 </script>
 
 <style>
+.game-info__content {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-content: flex-start;
+}
+
+
+
+p {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+
 .game-page {
     padding-top: 60px;
     max-width: 1200px;
@@ -92,5 +113,6 @@ export default {
     margin: 2px;
     justify-content: center;
     display: flex;
+    color: white;
 }
 </style>

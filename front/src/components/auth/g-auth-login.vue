@@ -4,40 +4,59 @@
             <form>
                 <h2>Логин</h2>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                        placeholder="Enter email">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                        else.</small>
+                    <input v-model="userLogin.login" type="login" class="form-control" id="exampleInputlLogin1"
+                        aria-describedby="loginHelp" placeholder="Введите ваш логин">
+                    <small id="loginHelp" class="form-text text-muted">Никому не сообщайте свои данные</small>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    <input v-model="userLogin.password" type="password" class="form-control" id="exampleInputPassword1"
+                        placeholder="Пароль">
                 </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                </div>
+
 
                 <router-link to="/auth/register">
                     <a class="nav-link active black" aria-current="page" href="#">Ещё не зарегистрировались?</a>
                 </router-link>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" @click="LOGIN_USER(userLogin)">Submit</button>
             </form>
         </div>
     </div>
 </template>
 
 <script>
-export default {
+import { mapActions } from 'vuex'
 
+export default {
+    methods: {
+        ...mapActions([
+            "LOGIN_USER"
+        ])
+    }
+    ,
+    data() {
+        return {
+            userLogin: {
+                login: '',
+                password: ''
+            }
+        }
+    }
 }
 </script>
 
 <style scoped>
 .black {
     color: black
+}
+
+.form-control {
+    width: 400px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
 }
 
 .auth-border {

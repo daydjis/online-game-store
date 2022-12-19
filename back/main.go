@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"time"
 )
 
 func getGamesHandler(writer http.ResponseWriter, request *http.Request) {
@@ -114,14 +113,10 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 		} else {
 			// Если логин и пароль прошли валидацию, то регистрируем пользователя
 			_, err := database.RegisterNewUser(user)
-			// В случае отсутствия ошибок отправляем в ответе куки для аутентификации
+			// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 			if err == nil {
 				token := authentication.GenerateToken(user.Login)
-				http.SetCookie(writer, &http.Cookie{
-					Name:    "auth_cookie",
-					Value:   token,
-					Expires: time.Now().Add(12 * time.Hour),
-				})
+				writer.Header().Set("Set-Cookie", token)
 			}
 			response, status = MakeResponseForRegister(err)
 		}
@@ -162,13 +157,9 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 				// Если ошибка не возникла, сверяем пароль, указанный пользователем с паролем в БД
 				errPassword := hashing.CheckPassword(userDB.Password, user.Password)
 				if errPassword == nil {
-					// В случае отсутствия ошибок отправляем в ответе куки для аутентификации
+					// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 					token := authentication.GenerateToken(user.Login)
-					http.SetCookie(writer, &http.Cookie{
-						Name:    "auth_cookie",
-						Value:   token,
-						Expires: time.Now().Add(12 * time.Hour),
-					})
+					writer.Header().Set("Set-Cookie", token)
 				}
 				response, status = MakeResponseForLogin(errPassword)
 			}
@@ -191,17 +182,16 @@ func CheckToken(handler http.Handler) http.Handler {
 			writer.WriteHeader(http.StatusOK)
 			return
 		}
-		cookie, err := request.Cookie("auth_cookie")
-		if err != nil {
-			log.Println(err)
+		token := request.Header.Get("Authorization")
+		if token == "" {
 			writer.WriteHeader(http.StatusForbidden)
-			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)
+			response := fmt.Sprint("{\"Error\":\"No Authorization header\"}")
 			if _, errResp := io.WriteString(writer, response); errResp != nil {
 				log.Fatal(errResp)
 			}
 			return
 		}
-		err = authentication.VerifyToken(cookie.Value)
+		err := authentication.VerifyToken(token)
 		if err != nil {
 			writer.WriteHeader(http.StatusForbidden)
 			response := fmt.Sprintf("{\"Error\":\"%s\"}", err)

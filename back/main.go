@@ -105,6 +105,7 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 		var user database.User
 		var response string
 		var status int
+		var token string
 		// Записываем тело запроса в переменную user
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &user); err != nil {
@@ -120,10 +121,9 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 			_, err := database.RegisterNewUser(user)
 			// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 			if err == nil {
-				token := authentication.GenerateToken(user.Login)
-				writer.Header().Set("Set-Cookie", fmt.Sprintf("jwt=%s", token))
+				token = authentication.GenerateToken(user.Login)
 			}
-			response, status = MakeResponseForRegister(err)
+			response, status = MakeResponseForRegister(err, token)
 		}
 		// Формируем ответ клиенту
 		writer.WriteHeader(status)
@@ -139,6 +139,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	writer.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodOptions {
 		writer.WriteHeader(http.StatusOK)
@@ -148,6 +149,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 		var user database.User
 		var response string
 		var status int
+		var token string
 		// Записываем тело запроса в переменную user
 		body, _ := io.ReadAll(request.Body)
 		if err := json.Unmarshal(body, &user); err != nil {
@@ -163,16 +165,15 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 			userDB, errDB := database.GetUserByLogin(user)
 			if errDB != nil {
 				// Если возникла ошибка, например такого логина в базе нет, возвращаем ошибку
-				response, status = MakeResponseForLogin(errDB)
+				response, status = MakeResponseForLogin(errDB, token)
 			} else {
 				// Если ошибка не возникла, сверяем пароль, указанный пользователем с паролем в БД
 				errPassword := hashing.CheckPassword(userDB.Password, user.Password)
 				if errPassword == nil {
 					// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
-					token := authentication.GenerateToken(user.Login)
-					writer.Header().Set("Set-Cookie", fmt.Sprintf("jwt=%s", token))
+					token = authentication.GenerateToken(user.Login)
 				}
-				response, status = MakeResponseForLogin(errPassword)
+				response, status = MakeResponseForLogin(errPassword, token)
 			}
 		}
 		// Формируем ответ клиенту

@@ -40,7 +40,7 @@ func MakeResponseForDelete(deletedCount int64, err error) (string, int) {
 	return response, status
 }
 
-func MakeResponseForRegister(err error) (string, int) {
+func MakeResponseForRegister(err error, token string) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "duplicated login" {
@@ -50,11 +50,11 @@ func MakeResponseForRegister(err error) (string, int) {
 		response := fmt.Sprintf("{\"Result\":\"User was not created,\"Error\":\"%s\"}", err)
 		return response, 500
 	}
-	response := fmt.Sprintf("{\"Result\":\"User was created successfully\"}")
+	response := fmt.Sprintf("{\"Result\":\"User was created successfully\",\"jwt\":\"%s\"}", token)
 	return response, 200
 }
 
-func MakeResponseForLogin(err error) (string, int) {
+func MakeResponseForLogin(err error, token string) (string, int) {
 	if err != nil {
 		log.Println(err)
 		if errors.Is(err, hashing.ErrWrongPassword) {
@@ -67,7 +67,7 @@ func MakeResponseForLogin(err error) (string, int) {
 		response := fmt.Sprintf("{\"Result\":\"Unsuccessful login\",\"Error\":\"%s\"}", err)
 		return response, 500
 	}
-	response := fmt.Sprint("{\"Result\":\"Welcome to the club, buddy!\"}")
+	response := fmt.Sprintf("{\"Result\":\"Welcome to the club, buddy!\",\"jwt\":\"%s\"}", token)
 	return response, 200
 }
 

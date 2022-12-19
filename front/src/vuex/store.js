@@ -127,7 +127,7 @@ const store = createStore({
             withCredentials: true,
           })
           .then(function (response) {
-            console.log('Ответ', response)
+            console.log('Ответ', response.headers)
             console.log(document.cookie)
           })
       } catch (error) {

@@ -127,9 +127,8 @@ const store = createStore({
             withCredentials: true,
           })
           .then(function (response) {
-            console.log('Первый ответ', response)
-            console.log(response.headers['Authorization'])
-            document.cookie = `name = ${response.data.Result}`
+            console.log('Ответ', response)
+            console.log(document.cookie)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)

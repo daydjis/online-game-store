@@ -121,7 +121,7 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 			// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 			if err == nil {
 				token := authentication.GenerateToken(user.Login)
-				writer.Header().Set("Authorization", token)
+				writer.Header().Set("Set-Cookie", fmt.Sprintf("jwt=%s", token))
 			}
 			response, status = MakeResponseForRegister(err)
 		}
@@ -170,7 +170,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 				if errPassword == nil {
 					// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 					token := authentication.GenerateToken(user.Login)
-					writer.Header().Set("Authorization", token)
+					writer.Header().Set("Set-Cookie", fmt.Sprintf("jwt=%s", token))
 				}
 				response, status = MakeResponseForLogin(errPassword)
 			}

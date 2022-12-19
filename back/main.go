@@ -121,7 +121,7 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 			// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 			if err == nil {
 				token := authentication.GenerateToken(user.Login)
-				writer.Header().Set("Set-Cookie", token)
+				writer.Header().Set("Authorization", token)
 			}
 			response, status = MakeResponseForRegister(err)
 		}
@@ -138,6 +138,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodOptions {
 		writer.WriteHeader(http.StatusOK)
@@ -169,7 +170,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
 				if errPassword == nil {
 					// В случае отсутствия ошибок отправляем в ответе токен для аутентификации
 					token := authentication.GenerateToken(user.Login)
-					writer.Header().Set("Set-Cookie", token)
+					writer.Header().Set("Authorization", token)
 				}
 				response, status = MakeResponseForLogin(errPassword)
 			}

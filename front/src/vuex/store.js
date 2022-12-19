@@ -125,12 +125,11 @@ const store = createStore({
         await axios
           .post('http://localhost:5000/api/login', this.state.userInfo, {
             withCredentials: true,
-            // xsrfCookieName: 'csrftoken_testtest',
-            // xsrfHeaderName: 'X-CSRFToken',
           })
           .then(function (response) {
             console.log('Первый ответ', response)
-            console.log(response.headers['set-ookie'])
+            console.log(response.headers['Authorization'])
+            document.cookie = `name = ${response.data.Result}`
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)

@@ -123,10 +123,12 @@ const store = createStore({
       try {
         commit('SET_USER_INFO', authInfo)
         await axios
-          .post('http://localhost:5000/api/login', this.state.userInfo)
+          .post('http://localhost:5000/api/login', this.state.userInfo, {
+            withCredentials: true,
+          })
           .then(function (response) {
-            console.log(response)
-            console.log(document.cookie)
+            console.log('Первый ответ', response)
+            console.log(response.headers['set-ookie'])
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)

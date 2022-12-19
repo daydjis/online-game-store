@@ -110,9 +110,13 @@ const store = createStore({
         await axios
           .post('http://localhost:5000/api/games/new', this.state.newGameForm, {
             method: 'POST',
+            headers: {
+              Authorization: `${document.cookie.jwt}`,
+            },
           })
           .then(function (response) {
             console.log('УРА', response)
+            console.log('Наш куки', document.cookie.jwt)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -127,8 +131,9 @@ const store = createStore({
             withCredentials: true,
           })
           .then(function (response) {
-            console.log('Ответ', response.headers)
+            console.log('Ответ', response.data)
             console.log(document.cookie)
+            document.cookie = `jwt=${response.data.jwt}`
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)

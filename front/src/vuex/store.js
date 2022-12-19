@@ -107,20 +107,27 @@ const store = createStore({
     async POST_NEW_GAME({ commit }, newGameInfo) {
       try {
         commit('CREATE_NEW_GAME', newGameInfo)
+        const getCookie = (name) => {
+          const value = `; ${document.cookie}`
+          const parts = value.split(`; ${name}=`)
+          if (parts.length === 2) return parts.pop().split(';').shift()
+        }
+        const ourCookie = getCookie('jwt')
         await axios
           .post('http://localhost:5000/api/games/new', this.state.newGameForm, {
             method: 'POST',
             headers: {
-              Authorization: `${document.cookie.jwt}`,
+              Authorization: `${ourCookie}`,
             },
           })
           .then(function (response) {
             console.log('УРА', response)
-            console.log('Наш куки', document.cookie.jwt)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
         console.log('NEW_GAME')
+      } finally {
+        console.log('Наш куки', document.cookie)
       }
     },
     async LOGIN_USER({ commit }, authInfo) {
@@ -133,7 +140,7 @@ const store = createStore({
           .then(function (response) {
             console.log('Ответ', response.data)
             console.log(document.cookie)
-            document.cookie = `jwt=${response.data.jwt}`
+            document.cookie = `jwt=${response.data}`
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)

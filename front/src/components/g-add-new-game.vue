@@ -9,27 +9,22 @@
                 </div>
                 <div class="form-group">
                     <input v-model="newGameForm.imageDescription" type="text" class="form-control"
-                        id="formGroupExampleInput" placeholder="Описание картинки">
+                        placeholder="Описание картинки">
                 </div>
                 <div class="form-group">
-                    <input v-model="newGameForm.video" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Ссылка на трейлер">
+                    <input v-model="newGameForm.video" type="text" class="form-control" placeholder="Ссылка на трейлер">
                 </div>
                 <div class="form-group">
-                    <input v-model="newGameForm.genres" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Жанры">
+                    <input v-model="newGameForm.genres" type="text" class="form-control" placeholder="Жанры">
                 </div>
                 <div class="form-group">
-                    <input v-model="newGameForm.description" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Описание">
+                    <input v-model="newGameForm.description" type="text" class="form-control" placeholder="Описание">
                 </div>
                 <div class="form-group">
-                    <input v-model="newGameForm.image" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Изображение">
+                    <input v-model="newGameForm.image" type="text" class="form-control" placeholder="Изображение">
                 </div>
                 <div class="form-group">
-                    <input v-model.number="newGameForm.price" type="number" class="form-control"
-                        id="formGroupExampleInput" placeholder="Цена">
+                    <input v-model.number="newGameForm.price" type="number" class="form-control" placeholder="Цена">
 
                 </div>
             </form>
@@ -76,6 +71,13 @@ export default {
     max-width: 100px;
 }
 
+.form-group {
+    width: 60%;
+}
+
+/* .form-control {
+    width: 100%;
+} */
 
 
 .add-new-game__menu {
@@ -85,5 +87,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     height: 400px;
+    margin: 0 auto;
 }
 </style>

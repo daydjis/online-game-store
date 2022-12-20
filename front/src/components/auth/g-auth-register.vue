@@ -4,33 +4,71 @@
             <form>
                 <h2>Регистрация</h2>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                        placeholder="Enter email">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                        else.</small>
+                    <input v-model="userNewLogin.login" type="login" class="form-control" id="exampleInputlLogin1"
+                        aria-describedby="loginHelp" placeholder="Введите ваш логин">
+                    <small id="loginHelp" class="form-text text-muted">Никому не сообщайте свои данные</small>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    <input v-model="userNewLogin.password" type="password" class="form-control"
+                        id="exampleInputPassword1" placeholder="Пароль">
                 </div>
-                <div class="form-group form-check">
-                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+
+
+                <router-link to="/auth/login">
+                    <a class="nav-link active black" aria-current="page" href="#">уже есть аккаунт?</a>
+                </router-link>
+
+                <button v-if="!LOADER" class="btn btn-primary" @click="REGISTER_USER(userNewLogin)">Отправить</button>
+                <div class="d-flex justify-content-center" v-else>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only"></span>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
 </template>
 
 <script>
-export default {
+import { mapActions, mapGetters } from 'vuex'
 
+export default {
+    methods: {
+        ...mapActions([
+            "REGISTER_USER"
+        ])
+    },
+    computed: {
+        ...mapGetters([
+            "LOADER"
+        ])
+    }
+    ,
+    data() {
+        return {
+            userNewLogin: {
+                login: '',
+                password: ''
+            }
+        }
+    }
 }
 </script>
 
-<style >
+<style scoped>
+.black {
+    color: black
+}
+
+.form-control {
+    width: 400px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
 .auth-border {
     margin-top: 40px;
     box-shadow: 1px 2px 4px black;

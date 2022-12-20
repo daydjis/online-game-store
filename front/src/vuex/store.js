@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { createStore } from 'vuex'
+import router from '../router/router'
 
 const store = createStore({
   state: {
@@ -27,6 +28,8 @@ const store = createStore({
       login: '',
       password: '',
     },
+    // Для проверки на наличие куки
+    isCookie: null,
   },
 
   mutations: {
@@ -67,6 +70,9 @@ const store = createStore({
     SET_USER_INFO: (state, authInfo) => {
       state.userInfo = authInfo
     },
+    SET_COOKIE: (state, cookie) => {
+      state.isCookie = cookie
+    },
   },
 
   actions: {
@@ -89,6 +95,7 @@ const store = createStore({
         commit('ISLOADING', false)
       }
     },
+
     async GET_GAMES_FROM_API({ commit }) {
       try {
         commit('ISLOADING', true)
@@ -104,6 +111,7 @@ const store = createStore({
         commit('ISLOADING', false)
       }
     },
+
     async POST_NEW_GAME({ commit }, newGameInfo) {
       try {
         commit('CREATE_NEW_GAME', newGameInfo)
@@ -125,27 +133,56 @@ const store = createStore({
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
-        console.log('NEW_GAME')
       } finally {
         console.log('Наш куки', document.cookie)
       }
     },
+
     async LOGIN_USER({ commit }, authInfo) {
       try {
         commit('SET_USER_INFO', authInfo)
+        commit('ISLOADING', true)
         await axios
           .post('http://localhost:5000/api/login', this.state.userInfo, {
             withCredentials: true,
           })
           .then(function (response) {
-            console.log('Ответ', response.data)
-            console.log(document.cookie)
-            document.cookie = `jwt=${response.data}`
+            document.cookie = `jwt=${response.data.jwt}`
+            commit('SET_COOKIE', `jwt=${response.data.jwt}`)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
       } finally {
         console.log('ря')
+        commit('ISLOADING', false)
+        if (document.cookie) {
+          router.push({ path: `/` })
+        } else {
+          console.log('попался')
+        }
+      }
+    },
+
+    async REGISTER_USER({ commit }, authInfo) {
+      try {
+        commit('SET_USER_INFO', authInfo)
+        commit('ISLOADING', true)
+        await axios
+          .post('http://localhost:5000/api/register', this.state.userInfo, {
+            withCredentials: true,
+          })
+          .then(function (response) {
+            document.cookie = `jwt=${response.data.jwt}`
+          })
+      } catch (error) {
+        console.log('Ошибка пост запроса', error)
+      } finally {
+        commit('ISLOADING', false)
+        if (document.cookie) {
+          router.push({ path: `/` })
+        } else {
+          console.log('попался')
+        }
       }
     },
 
@@ -158,6 +195,13 @@ const store = createStore({
     },
     DELETE_FROM_CART({ commit }, game) {
       commit('REMOVE_FROM_CART', game)
+    },
+    CHECK_COOKIE({ commit }) {
+      if (document.cookie) {
+        commit('SET_COOKIE', true)
+      } else {
+        commit('SET_COOKIE', null)
+      }
     },
   },
 
@@ -182,6 +226,9 @@ const store = createStore({
     },
     USER_INFO(state) {
       return state.userInfo
+    },
+    COOKIE_IS_EXIST(state) {
+      return state.isCookie
     },
   },
 })

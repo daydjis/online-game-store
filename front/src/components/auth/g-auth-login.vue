@@ -18,19 +18,29 @@
                     <a class="nav-link active black" aria-current="page" href="#">Ещё не зарегистрировались?</a>
                 </router-link>
 
-                <button class="btn btn-primary" @click="LOGIN_USER(userLogin)">Submit</button>
+                <button v-if="!LOADER" class="btn btn-primary" @click="LOGIN_USER(userLogin)">Submit</button>
+                <div class="d-flex justify-content-center" v-else>
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     methods: {
         ...mapActions([
             "LOGIN_USER"
+        ])
+    },
+    computed: {
+        ...mapGetters([
+            "LOADER"
         ])
     }
     ,

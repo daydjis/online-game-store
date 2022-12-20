@@ -41,7 +41,6 @@ export default {
         ]),
 
         gameInfo() {
-            this.SET_CURRENT_GAME(this.game_data)
             this.$router.push({ path: `/games/${this.game_data.id}` })
             this.GET_CURRENT_GAME(this.game_data.id)
         },

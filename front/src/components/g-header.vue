@@ -8,7 +8,7 @@
                 <a class="nav-link active" aria-current="page" href="#">Главная</a>
             </router-link>
             <router-link to="/create/game">
-                <a class="nav-link active" aria-current="page" href="#">Добавить</a>
+                <a v-if="COOKIE_IS_EXIST" class="nav-link active" aria-current="page" href="#">Добавить</a>
             </router-link>
             <div>
                 <router-link to="/cart">
@@ -27,25 +27,43 @@
                     <path fill-rule="evenodd"
                         d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
                 </svg>
+                <a class="navbar__user-nickname" v-if="COOKIE_IS_EXIST">user</a>
             </router-link>
+
+
+
         </div>
     </nav>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 
 export default {
+    methods: {
+        ...mapActions([
+            "CHECK_COOKIE"
+        ])
+    },
     computed: {
         ...mapGetters([
-            "CART"
+            "CART",
+            "COOKIE_IS_EXIST"
         ])
+    },
+    mounted() {
+        this.CHECK_COOKIE()
     }
+
 }
 </script>
 
 <style>
+.navbar__user-nickname {
+    margin-left: 5px;
+}
+
 .cart-items {
     background-color: brown;
     border-radius: 100px;

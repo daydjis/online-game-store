@@ -30,11 +30,15 @@ const store = createStore({
     },
     // Для проверки на наличие куки
     isCookie: null,
+    userNickname: '',
   },
 
   mutations: {
     SET_GAMES_TO_STATE: (state, games) => {
       state.games = games
+    },
+    SET_NICKNAME: (state, login) => {
+      state.userNickname = login
     },
     SET_CART: (state, game) => {
       if (state.cart.length) {
@@ -149,6 +153,24 @@ const store = createStore({
           .then(function (response) {
             document.cookie = `jwt=${response.data.jwt}`
             commit('SET_COOKIE', true)
+            function parseJwt(token) {
+              var base64Url = token.split('.')[1]
+              var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+              var jsonPayload = decodeURIComponent(
+                window
+                  .atob(base64)
+                  .split('')
+                  .map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                  })
+                  .join('')
+              )
+
+              return JSON.parse(jsonPayload)
+            }
+            const newCokkie = parseJwt(response.data.jwt)
+            commit('SET_NICKNAME', newCokkie.login)
+            console.log(newCokkie.login)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -173,6 +195,23 @@ const store = createStore({
           .then(function (response) {
             document.cookie = `jwt=${response.data.jwt}`
             commit('SET_COOKIE', true)
+            function parseJwt(token) {
+              const base64Url = token.split('.')[1]
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+              const jsonPayload = decodeURIComponent(
+                window
+                  .atob(base64)
+                  .split('')
+                  .map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                  })
+                  .join('')
+              )
+
+              return JSON.parse(jsonPayload)
+            }
+            const newCokkie = parseJwt(response.data.jwt)
+            commit('SET_NICKNAME', newCokkie.login)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -246,6 +285,9 @@ const store = createStore({
     },
     COOKIE_IS_EXIST(state) {
       return state.isCookie
+    },
+    USER_NICKNAME(state) {
+      return state.userNickname
     },
   },
 })

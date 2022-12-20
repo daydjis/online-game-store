@@ -30,7 +30,7 @@
 
 
             </router-link>
-            <a class="navbar__user" v-if="COOKIE_IS_EXIST">user</a>
+            <a class="navbar__user" v-if="COOKIE_IS_EXIST">{{ USER_NICKNAME }}</a>
             <a class="navbar__user" v-if="COOKIE_IS_EXIST" @click="DELETE_COOKIE()">logout</a>
 
 
@@ -52,7 +52,8 @@ export default {
     computed: {
         ...mapGetters([
             "CART",
-            "COOKIE_IS_EXIST"
+            "COOKIE_IS_EXIST",
+            "USER_NICKNAME"
         ])
     },
     mounted() {

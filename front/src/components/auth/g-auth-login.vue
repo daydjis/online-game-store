@@ -40,7 +40,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            "LOADER"
+            "LOADER",
+
         ])
     }
     ,

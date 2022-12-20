@@ -95,7 +95,9 @@ func registrationHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Access-Control-Allow-Origin", request.Header.Get("Origin"))
 	writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	writer.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 	log.Println(request.Method, request.URL)
 	if request.Method == http.MethodOptions {
 		writer.WriteHeader(http.StatusOK)

@@ -148,12 +148,11 @@ const store = createStore({
           })
           .then(function (response) {
             document.cookie = `jwt=${response.data.jwt}`
-            commit('SET_COOKIE', `jwt=${response.data.jwt}`)
+            commit('SET_COOKIE', true)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
       } finally {
-        console.log('ря')
         commit('ISLOADING', false)
         if (document.cookie) {
           router.push({ path: `/` })
@@ -173,9 +172,11 @@ const store = createStore({
           })
           .then(function (response) {
             document.cookie = `jwt=${response.data.jwt}`
+            commit('SET_COOKIE', true)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
+        commit('SET_COOKIE', null)
       } finally {
         commit('ISLOADING', false)
         if (document.cookie) {
@@ -197,6 +198,22 @@ const store = createStore({
       commit('REMOVE_FROM_CART', game)
     },
     CHECK_COOKIE({ commit }) {
+      if (document.cookie) {
+        commit('SET_COOKIE', true)
+      } else {
+        commit('SET_COOKIE', null)
+      }
+    },
+    DELETE_COOKIE({ commit }) {
+      const cookies = document.cookie.split(';')
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i]
+        const eqPos = cookie.indexOf('=')
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
+        document.cookie =
+          name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+      }
       if (document.cookie) {
         commit('SET_COOKIE', true)
       } else {

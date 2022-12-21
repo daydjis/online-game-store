@@ -30,8 +30,11 @@
 
 
             </router-link>
-            <a class="navbar__user" v-if="COOKIE_IS_EXIST">{{ USER_NICKNAME }}</a>
-            <a class="navbar__user" v-if="COOKIE_IS_EXIST" @click="DELETE_COOKIE()">logout</a>
+            <div v-if="COOKIE_IS_EXIST">
+                <a class="navbar__user">{{ USER_NICKNAME }}</a> |
+                <a class="navbar__user" @click="DELETE_COOKIE()">Выйти</a>
+            </div>
+
 
 
         </div>
@@ -39,14 +42,18 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 
 export default {
     methods: {
         ...mapActions([
             "CHECK_COOKIE",
-            "DELETE_COOKIE"
+            "DELETE_COOKIE",
+
+        ]),
+        ...mapMutations([
+            "SET_NICKNAME"
         ])
     },
     computed: {
@@ -56,8 +63,13 @@ export default {
             "USER_NICKNAME"
         ])
     },
+    data() {
+        const nick = localStorage.getItem("login")
+        return nick
+    },
     mounted() {
         this.CHECK_COOKIE()
+        this.SET_NICKNAME(localStorage.getItem("login"))
     }
 
 }

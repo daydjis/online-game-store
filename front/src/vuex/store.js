@@ -11,15 +11,7 @@ const store = createStore({
     // лоадер
     isLoading: false,
     // форма для игры
-    newGameForm: {
-      title: '',
-      description: '',
-      price: 0,
-      genres: [],
-      video: '',
-      imageDescription: '',
-      image: '',
-    },
+    newGameForm: {},
     // карточка игры
     setCurrentGame: {},
     // game info
@@ -30,6 +22,7 @@ const store = createStore({
     },
     // Для проверки на наличие куки
     isCookie: null,
+    // отображение ника в хеддере
     userNickname: '',
   },
 
@@ -133,7 +126,7 @@ const store = createStore({
             },
           })
           .then(function (response) {
-            console.log('УРА', response)
+            console.log('игра успешно добавлена', response)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -154,9 +147,9 @@ const store = createStore({
             document.cookie = `jwt=${response.data.jwt}`
             commit('SET_COOKIE', true)
             function parseJwt(token) {
-              var base64Url = token.split('.')[1]
-              var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-              var jsonPayload = decodeURIComponent(
+              const base64Url = token.split('.')[1]
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+              const jsonPayload = decodeURIComponent(
                 window
                   .atob(base64)
                   .split('')
@@ -169,8 +162,8 @@ const store = createStore({
               return JSON.parse(jsonPayload)
             }
             const newCokkie = parseJwt(response.data.jwt)
+            localStorage.setItem('login', newCokkie.login)
             commit('SET_NICKNAME', newCokkie.login)
-            console.log(newCokkie.login)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -212,6 +205,7 @@ const store = createStore({
             }
             const newCokkie = parseJwt(response.data.jwt)
             commit('SET_NICKNAME', newCokkie.login)
+            localStorage.setItem('login', newCokkie.login)
           })
       } catch (error) {
         console.log('Ошибка пост запроса', error)
@@ -243,8 +237,10 @@ const store = createStore({
         commit('SET_COOKIE', null)
       }
     },
+
     DELETE_COOKIE({ commit }) {
       const cookies = document.cookie.split(';')
+      localStorage.clear()
       for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i]
         const eqPos = cookie.indexOf('=')

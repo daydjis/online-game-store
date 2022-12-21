@@ -28,7 +28,8 @@
 
                 </div>
             </form>
-            <button type="button" class="btn btn-outline-primary" @click="POST_NEW_GAME(newGameForm)">Добавить</button>
+            <button type="button" class="btn btn-outline-primary"
+                @click="transformStrToArray(newGameForm)">Добавить</button>
         </div>
     </div>
 </template>
@@ -41,12 +42,19 @@ export default {
         ...mapGetters([
             "NEW_GAME"
         ]),
+
     },
     methods: {
         ...mapActions([
             'CREATE_NEW_GAME',
             'POST_NEW_GAME'
-        ])
+        ]),
+        transformStrToArray(obj) {
+            let strOfGenres = obj.genres
+            let arrayOfGanres = strOfGenres.split(',');
+            obj.genres = arrayOfGanres
+            this.POST_NEW_GAME(obj)
+        },
     },
 
     data() {
@@ -55,11 +63,11 @@ export default {
                 title: '',
                 description: '',
                 price: "",
-                genres: [""],
+                genres: "",
                 video: '',
                 imageDescription: '',
                 image: '',
-            },
+            }
         }
     },
 }
@@ -75,9 +83,7 @@ export default {
     width: 60%;
 }
 
-/* .form-control {
-    width: 100%;
-} */
+
 
 
 .add-new-game__menu {

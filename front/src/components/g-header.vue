@@ -41,7 +41,7 @@
     </nav>
 </template>
 
-<script>
+<script >
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 
